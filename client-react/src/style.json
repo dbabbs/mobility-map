@@ -1,0 +1,90 @@
+{
+   "version": 8,
+   "name": "Dylan Dark",
+   "metadata": {},
+   "sources": {
+      "berlin": {
+         "type": "vector",
+         "tiles": [
+            "https://xyz.api.here.com/tiles/herebase.02/{z}/{x}/{y}/omv?access_token=AA2O8362IQ98hAUBPbckQQ8"
+         ]
+      }
+   },
+   "layers": [{
+         "id": "background",
+         "type": "background",
+         "paint": {
+            "background-color": "white"
+         }
+      },
+      {
+         "id": "earth",
+         "type": "fill",
+         "source": "berlin",
+         "source-layer": "earth",
+         "paint": {
+            "fill-color": "white"
+         }
+      },
+      {
+         "id": "landuse",
+         "type": "fill",
+         "source": "berlin",
+         "source-layer": "landuse",
+         "paint": {
+            "fill-color": "#E9EEF1"
+         }
+      },
+      {
+         "id": "water",
+         "type": "fill",
+         "source": "berlin",
+         "source-layer": "water",
+         "paint": {
+            "fill-color": "#C3CDD4"
+         }
+      },
+      {
+         "id": "primary-case",
+         "type": "line",
+         "source": "berlin",
+         "source-layer": "roads",
+         "filter": [
+            "all",
+            [
+               "!=",
+               "kind",
+               "rail"
+            ],
+            [
+               "==",
+               "kind",
+               "highway"
+            ],
+            [
+               "in",
+               "kind_detail",
+               "motorway",
+               "primary"
+            ]
+         ],
+         "paint": {
+            "line-color": "#EEEEEE",
+            "line-width": [
+               "interpolate",
+               [
+                  "linear"
+               ],
+               [
+                  "zoom"
+               ],
+               6,
+               1,
+               18,
+               14
+            ]
+         }
+      }
+   ],
+   "id": "berlin"
+}

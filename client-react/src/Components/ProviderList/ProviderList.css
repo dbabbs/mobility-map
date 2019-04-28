@@ -64,6 +64,8 @@
    /* align-items: center; */
    /* justify-content: center; */
    flex-direction: row-reverse;
+   color: #737373;
+   font-size: 12px;
 }
 
 .icon-container img {

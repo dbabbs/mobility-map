@@ -34,7 +34,8 @@ p {
 
 .tooltip {
    background: #F9FAF9;
-   border-radius: 2px;
+   border-bottom-left-radius: 2px;
+   border-bottom-right-radius: 2px;
    padding: 10px;
    position: absolute;
    z-index: 10000;

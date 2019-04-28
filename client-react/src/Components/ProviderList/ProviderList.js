@@ -19,6 +19,8 @@ const units = {
 }
 
 class ProviderList extends React.Component {
+
+
    render() {
       const max = Math.max.apply(null,
          this.props.providers.map(x => x[this.props.active])
@@ -27,30 +29,45 @@ class ProviderList extends React.Component {
          <>
             {
                this.props.providers.map((provider, i) => {
+                  // console.log(provider);
                   const style = {
-                     background: provider.color,
+                     background: provider.active ? provider.color : '#DBDBDB',
                      width: provider[this.props.active] / max * 100 + '%'
                   }
-                  return <div key={i} className="provider">
+                  return <div
+                        key={i}
+                        className="provider"
+                        onClick={() => this.props.handleClick(provider.name)}
+                     >
                      <div style={style} className="line" />
-                     <span className="title">
+                     <span style={{color: provider.active ? 'black' : '#737373'}} className="title">
                      {provider.name.charAt(0).toUpperCase() + provider.name.substring(1)}
+
                      </span>
                      {
-                        this.props.active === 'price' ?
-                        <span className="sub">${provider[this.props.active]}</span>
-                        :
-                        <span className="sub">{provider[this.props.active]} {units[this.props.active]}</span>
 
-                     }
-                        <div className="icon-container">
+                        <span className="sub">
                            {
-                              provider.modes.map(mode =>
-                                 <img style={{height: '17px'}} src={icons[mode]} alt="transportation mode icon" />
-                              )
+                              this.props.active === 'price' ?
+                              `${provider[this.props.active]}` :
+                              `${provider[this.props.active]} ${units[this.props.active]}`
                            }
-                        </div>
+                        </span>
+                     }
 
+                     <div className="icon-container">
+                        {
+                           provider.active &&
+                           provider.modes.map(mode =>
+                              <img style={{height: '17px'}} src={icons[mode]} alt="transportation mode icon" />
+                           )
+                        }
+                        {
+                           !provider.active &&
+                           <span> (hidden)</span>
+                        }
+
+                     </div>
 
                   </div>
                })

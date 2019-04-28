@@ -4,6 +4,8 @@ import {GeoJsonLayer, PathLayer} from '@deck.gl/layers';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
 
+import mapStyle from './style.json'
+
 
 import Selector from './Components/Selector/Selector';
 import Section from './Components/SidebarSection/Section'
@@ -39,7 +41,8 @@ class App extends React.Component {
                distance: 3184,
                trips: 122,
                price: 800,
-               modes: ['car']
+               modes: ['car'],
+               active: true
             },
             {
                name: 'jump',
@@ -47,7 +50,8 @@ class App extends React.Component {
                distance: 2124,
                trips: 35,
                price: 112,
-               modes: ['bike', 'scooter']
+               modes: ['bike', 'scooter'],
+               active: true
             },
             {
                name: 'lime',
@@ -55,7 +59,8 @@ class App extends React.Component {
                distance: 1241,
                trips: 80,
                price: 201,
-               modes: ['bike', 'scooter']
+               modes: ['bike', 'scooter'],
+               active: true
             },
             {
                name: 'lyft',
@@ -63,7 +68,8 @@ class App extends React.Component {
                distance: 400,
                trips: 14,
                price: 181,
-               modes: ['car']
+               modes: ['car'],
+               active: true
             },
          ],
          activeMetric: 'trips',
@@ -110,7 +116,7 @@ class App extends React.Component {
             clearInterval(timer)
          }
 
-      }, 20)
+      }, 200)
    }
 
    renderTooltip = () => {
@@ -118,7 +124,11 @@ class App extends React.Component {
 
       if (tooltip) {
          return tooltip && (
-            <div className="tooltip" style={{left: this.state.x, top: this.state.y}}>
+
+            <div
+               className="tooltip"
+               style={{left: this.state.x, top: this.state.y, borderTop: `2px solid ${this.state.providers[1].color}`}}
+            >
                <div>
                   <span className="key">Provider</span>
                   <span className="value">Uber</span>
@@ -148,6 +158,20 @@ class App extends React.Component {
 
    setTooltip(x, y, object) {
       this.setState({x, y, tooltip: object});
+   }
+
+   toggleProviders = (p) => {
+      // console.log(p);
+      const providers = this.state.providers.map(x => {
+         if (x.name === p) {
+            x.active = !x.active;
+         }
+         return x;
+      })
+      // console.log(providers);
+      this.setState({
+         providers: providers
+      })
    }
 
    render() {
@@ -200,6 +224,7 @@ class App extends React.Component {
                      changeActive={this.changeActive}
                   />
                   <ProviderList
+                     handleClick={this.toggleProviders}
                      providers={this.state.providers}
                      active={this.state.activeMetric}
                    />
@@ -237,6 +262,7 @@ class App extends React.Component {
             >
                <StaticMap
                   mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+                  mapStyle={mapStyle}
                   mapStyle="mapbox://styles/mapbox/dark-v9"
                />
             </DeckGL>
