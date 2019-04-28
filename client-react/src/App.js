@@ -17,7 +17,6 @@ import Sidebar from './Components/Sidebar/Sidebar';
 
 import DeckGL from '@deck.gl/react';
 import data from './mobility-data.json';
-import tripsData from './trips-data.json';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGJhYmJzIiwiYSI6ImNqN2d2aDBvczFkNmEycWt5OXo0YnY3ejkifQ.h1gKMs1F18_AhB09s91gWg';
 const initialViewState = { longitude: -122.335167, latitude: 47.608013, zoom: 11, pitch: 0, bearing: 0};
@@ -41,7 +40,6 @@ class App extends React.Component {
       super(props);
       this.state = {
          data: data,
-         tripsData: tripsData,
          trips: [],
          time: 0,
          curr: data.length - 1, //0,
@@ -50,9 +48,6 @@ class App extends React.Component {
                name: 'uber',
                color: '#276EF1',
                color2: [39, 110, 241],
-               distance: 3184,
-               trips: 122,
-               price: 800,
                modes: ['car'],
                active: true
             },
@@ -60,9 +55,6 @@ class App extends React.Component {
                name: 'jump',
                color: '#E73A14',
                color2: [231, 58, 20],
-               distance: 2124,
-               trips: 35,
-               price: 112,
                modes: ['bike', 'scooter'],
                active: true
             },
@@ -70,9 +62,6 @@ class App extends React.Component {
                name: 'lime',
                color: '#25CF00',
                color2: [37, 207, 0],
-               distance: 1241,
-               trips: 80,
-               price: 201,
                modes: ['bike', 'scooter'],
                active: true
             },
@@ -80,20 +69,19 @@ class App extends React.Component {
                name: 'lyft',
                color: '#FE00D8',
                color2: [254, 0, 126],
-               distance: 400,
-               trips: 14,
-               price: 181,
                modes: ['car'],
                active: true
             },
          ],
          activeMetric: 'trips',
          activeLayer: 'polylines',
-         activeView: 'single'
+         activeView: 'single',
+         minDate: new Date('08/07/1995'),
+         maxDate: new Date()
       }
    }
    changeActive = (type, value) => {
-      // console.log(t);
+
       if (type === 'metric') {
          this.setState({
             activeMetric: value
@@ -117,13 +105,17 @@ class App extends React.Component {
       this.animate();
    }
    animate() {
-      const max = Math.max.apply(
-         null, this.state.data.features.map(x => x.geometry.coordinates.length)
-      )
+
+      //
+      // const data = this.state.data.features
+      //    .filter(x => x.geometry);
+      // const max = Math.max.apply(
+      //    null, data.map(x => x.geometry.coordinates.length)
+      // )
 
 
       // const timer = setInterval(() => {
-      //    // console.log(this.state.curr + 1)
+
       //    this.setState({
       //       curr: this.state.curr + 1
       //    })
@@ -176,42 +168,61 @@ class App extends React.Component {
    }
 
    toggleProviders = (p) => {
-      // console.log(p);
+
       const providers = this.state.providers.map(x => {
          if (x.name === p) {
             x.active = !x.active;
          }
          return x;
       })
-      // console.log(providers);
+
+
       this.setState({
          providers: providers
       })
    }
 
+   filterDate = evt => {
+      this.setState({
+         minDate: new Date(evt[0]),
+         maxDate: new Date(evt[1])
+      })
+      console.log(new Date(evt[0]))
+      console.log(new Date(evt[1]))
+   }
+
 
    render() {
-      // console.log(
-      //    this.hexToRgb(this.state.providers[1].color)
-      // )
 
-      // console.log(
-      //    this.state.data.features.map(x => x.properties.provider)
-      // )
-      // console.log()
+      const min = Math.min.apply(null,
+         this.state.data.features.map(x => new Date(x.properties.startDate))
+      );
+      const max = Math.max.apply(null,
+         this.state.data.features.map(x => new Date(x.properties.startDate))
+      );
 
-      // const d = this.state.data.features.map((row, i) => {
-      //    // console.log(this.state.curr);
-      //    row.geometry.coordinates = row.geometry.coordinates.slice(0, this.state.curr);
-      //    return row;
-      // })
-      // console.log(d);
 
-      const hexd = this.state.data.features.map(x => x.geometry.coordinates).flat();
-      // console.log(this.state.data);
+      let data = [];
+
+      for (let i = 0; i < this.state.providers.length; i++) {
+         if (this.state.providers[i].active) {
+            data.push(
+               ...this.state.data.features.filter(x => x.properties.provider === this.state.providers[i].name)
+            )
+         }
+      }
+
+      data = data.filter(x => new Date(x.properties.startDate) >= this.state.minDate)
+         .filter(x => new Date(x.properties.startDate) <= this.state.maxDate)
+
+
+
+
+      const hexd = data.map(x => x.geometry.coordinates).flat();
+
       const pathLayer = new PathLayer({
          id: 'path-layer',
-         data: this.state.data,
+         data: data,
          pickable: true,
          widthScale: 20,
          widthMinPixels: 2,
@@ -237,9 +248,9 @@ class App extends React.Component {
 
       const arcLayer = new ArcLayer({
          id: 'arc-layer',
-         data: this.state.data.features,
+         data: data,
          pickable: true,
-         getWidth: 12,
+         getWidth: 3,
          getSourcePosition: d => d.properties.startCoordinates,
          getTargetPosition: d => d.properties.endCoordinates,
          getSourceColor: d => [Math.sqrt(d.inbound), 140, 0],
@@ -255,6 +266,7 @@ class App extends React.Component {
       if (this.state.activeLayer === 'arcs') {
          layers.push(arcLayer);
       }
+
       return (
          <>
             {
@@ -275,6 +287,7 @@ class App extends React.Component {
                   <ProviderList
                      handleClick={this.toggleProviders}
                      providers={this.state.providers}
+                     data={data}
                      active={this.state.activeMetric}
                    />
                 <p style={{margin: 0}}>
@@ -307,7 +320,10 @@ class App extends React.Component {
                </Section>
             </Sidebar>
             <BottomBar
-               data={this.state.data}
+               data={data}
+               min={min}
+               max={max}
+               filterDate={this.filterDate}
             />
             <DeckGL
                initialViewState={initialViewState}

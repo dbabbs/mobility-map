@@ -17,23 +17,58 @@ const units = {
    price: 'dollars'
 }
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 class ProviderList extends React.Component {
 
 
    render() {
-      const max = Math.max.apply(null,
-         this.props.providers.map(x => x[this.props.active])
-      )
+
       return(
          <>
             {
                this.props.providers.map((provider, i) => {
-                  // console.log(provider);
+
+                  const filteredData = this.props.data.filter(x => x.properties.provider === provider.name);
+
+                  let value = 0;
+                  let max = 0;
+
+                  if (provider.active) {
+                     if (this.props.active === 'trips') {
+                        value = filteredData.length;
+                        max = this.props.data.length;
+                     } else if (this.props.active === 'distance') {
+                        value = filteredData.map(x => x.properties.distance)
+                           .reduce((a,b) => a + b);
+                        max = this.props.data.map(x => x.properties.distance)
+                           .reduce((a,b) => a + b);
+                     } else if (this.props.active === 'price') {
+                        value = filteredData.map(x => x.properties.cost)
+                           .reduce((a,b) => a + b);
+                        max = this.props.data.map(x => x.properties.cost)
+                           .reduce((a,b) => a + b);
+                     }
+                  }
+
+
                   const style = {
                      background: provider.active ? provider.color : '#DBDBDB',
                      width: provider.active ?
-                     provider[this.props.active] / max * 100 + '%' :
+                     value / max * 100 + '%' :
                      '0%'
+                  }
+
+
+                  let format = '';
+                  if (this.props.active === 'price') {
+                     format = `$${numberWithCommas(value.toFixed(2))}`
+                  } else if (this.props.active === 'distance') {
+                     format = `${numberWithCommas(value.toFixed(0))} ${units[this.props.active]}`
+                  } else if (this.props.active === 'trips') {
+                     format = `${value} ${units[this.props.active]}`
                   }
                   return <div
                         key={i}
@@ -42,16 +77,14 @@ class ProviderList extends React.Component {
                      >
                      <div style={style} className="line" />
                      <span style={{color: provider.active ? 'black' : '#737373'}} className="title">
-                     {provider.name.charAt(0).toUpperCase() + provider.name.substring(1)}
+                        {provider.name.charAt(0).toUpperCase() + provider.name.substring(1)}
 
                      </span>
                      {
 
                         <span className="sub">
                            {
-                              this.props.active === 'price' ?
-                              `$${provider[this.props.active]}` :
-                              `${provider[this.props.active]} ${units[this.props.active]}`
+                              format
                            }
                         </span>
                      }
@@ -59,8 +92,8 @@ class ProviderList extends React.Component {
                      <div className="icon-container">
                         {
                            provider.active &&
-                           provider.modes.map(mode =>
-                              <img style={{height: '17px'}} src={icons[mode]} alt="transportation mode icon" />
+                           provider.modes.map((mode, i) =>
+                              <img key={i} style={{height: '17px'}} src={icons[mode]} alt="transportation mode icon" />
                            )
                         }
                         {

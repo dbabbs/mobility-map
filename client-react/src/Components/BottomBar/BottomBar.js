@@ -22,16 +22,12 @@ class Histogram extends React.Component {
    }
 
    drawChart() {
-      console.log(this.props.data);
 
-      let histogramData = this.props.data.features.map(x => x.properties.startDate.split(' ')[0]);
+      let histogramData = this.props.data.map(x => new Date(x.properties.startDate));
 
-      const start = Math.min.apply(null,
-         histogramData.map(x => new Date(x))
-      );
-      const end = Math.max.apply(null,
-         histogramData.map(x => new Date(x))
-      );
+
+      const start = this.props.min;
+      const end = this.props.max;
       const margin = {
          top: 0,
          right: 0,
@@ -42,7 +38,6 @@ class Histogram extends React.Component {
       const width = document.getElementById('chart').offsetWidth;
       const height = 40 - margin.top - margin.bottom;
 
-      const parseDate = d3.timeParse("%Y-%d-%m");
       const x = d3.scaleTime().domain([
          addDays(start, -7), //new Date(2017, 1, 20),
          addDays(end, 7)
@@ -60,11 +55,7 @@ class Histogram extends React.Component {
          .attr("height", height + margin.top + margin.bottom).append("g")
          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      histogramData = histogramData.map(x => parseDate(x));
-
-
       const bins = histogram(histogramData);
-      console.log(bins);
 
       y.domain([
          0,
@@ -85,7 +76,7 @@ class Histogram extends React.Component {
 
 
    render() {
-      // console.log(this.props.data);
+
 
       return <div id="chart"></div>;
 
@@ -99,12 +90,23 @@ class BottomBar extends React.Component {
 
 
    render() {
+
+
       return (
          <div className = "bottom-bar" >
             <Histogram
                data={this.props.data}
+               min={this.props.min}
+               max={this.props.max}
+
             / >
-            <Range count={3} defaultValue={[0, 100]} pushable
+            <Range
+               onChange={this.props.filterDate}
+               min={this.props.min}
+               max={this.props.max}
+               count={3}
+               defaultValue={[this.props.min, this.props.max]}
+               allowCross={false}
                trackStyle={[{ backgroundColor: 'red' }]}
                handleStyle={[{ backgroundColor: 'yellow' }]}
                railStyle={{ backgroundColor: 'black' }}

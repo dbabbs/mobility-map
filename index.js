@@ -18,12 +18,33 @@ let lyft = Papa.parse(
 lyft = lyft.filter((x,i) => i !== lyft.length -1)
 
 
+let uber = Papa.parse(
+   fs.readFileSync('./data/uber.csv', 'utf8'),
+   {header: true}
+).data;
 
-/*
-Data notes
+let jump = Papa.parse(
+   fs.readFileSync('./data/jump.csv', 'utf8'),
+   {header: true}
+).data
+.filter(x => x['Rental Status'] !== '');
 
-Distance: miles
-*/
+// console.log(jump)
+
+const currency = {
+   EUR: 1.11,
+   GBP: 1.29,
+   PLN: 0.26,
+   TRY: 0.17,
+   USD: 1
+}
+//
+//
+// /*
+// Data notes
+//
+// Distance: miles
+// */
 
 async function geocode(query) {
    const url = `https://geocoder.api.here.com/6.2/geocode.json?app_id=${here.id}&app_code=${here.code}&searchtext=${query}`
@@ -37,19 +58,28 @@ async function geocode(query) {
 
 async function route(start, end, mode = 'car',) {
    const url = `https://route.api.here.com/routing/7.2/calculateroute.json?app_id=${here.id}&app_code=${here.code}&waypoint0=geo!${start.Latitude},${start.Longitude}&waypoint1=geo!${end.Latitude},${end.Longitude}&mode=fastest;${mode};traffic:disabled&routeattributes=shape`
-   const data = await ( await fetch(url).catch(e => 'error') ).json();
-   if (data.hasOwnProperty('route')) {
-      const distance = await data.response.route[0].summary.distance;
-      const polyline = await data.response.route[0].shape.map(
-         x => [
-            Number(x.split(",")[1]),
-            Number(x.split(",")[0])
-         ]
-      );
-      return {
-         routeError: false,
-         distance: distance,
-         polyline: polyline
+   // console.log(url);
+   const data = await ( await fetch(url) ).json().catch(e => console.log(url));
+   if (data.hasOwnProperty('response')) {
+      if (data.response.hasOwnProperty('route')) {
+         const distance = await data.response.route[0].summary.distance;
+         const polyline = await data.response.route[0].shape.map(
+            x => [
+               Number(x.split(",")[1]),
+               Number(x.split(",")[0])
+            ]
+         );
+         return {
+            routeError: false,
+            distance: distance,
+            polyline: polyline
+         }
+      } else {
+         return {
+            routeError: true,
+            distance: '',
+            polyline: []
+         }
       }
    } else {
       return {
@@ -58,6 +88,7 @@ async function route(start, end, mode = 'car',) {
          polyline: []
       }
    }
+
 
 }
 
@@ -69,9 +100,9 @@ async function start() {
          properties: {}
       };
       mod.properties.cost = Number(row.COST_AMOUNT_CENTS) / 100;
-      mod.properties.provider = 'Lime';
-      mod.properties.startDate = row.STARTED_AT;
-      mod.properties.endDate = row.COMPLETED_AT;
+      mod.properties.provider = 'lime';
+      mod.properties.startDate = new Date(row.STARTED_AT);
+      mod.properties.endDate = new Date(row.COMPLETED_AT);
       mod.properties.distance = row.DISTANCE_METERS * 0.00062137;
       mod.properties.startCoordinates = [Number(row.START_LONGITUDE), Number(row.START_LATITUDE)];
       mod.properties.endCoordinates = [Number(row.END_LONGITUDE), Number(row.END_LATITUDE)];
@@ -93,10 +124,10 @@ async function start() {
          properties: {}
       };
 
-      mod.properties.provider = 'Lyft'
+      mod.properties.provider = 'lyft'
       mod.properties.cost = Number(row.total.substring(1));
-      mod.properties.startDate = row.date;
-      mod.properties.startAddress = row.origin;
+      mod.properties.startDate = new Date(row.date);
+      mod.properties.startAddress = new Date(row.origin);
       mod.properties.endAddress = row.destination;
       mod.properties.distance =  routeError ? 0 : distance * 0.00062137;
 
@@ -106,61 +137,84 @@ async function start() {
    })
 
    lyft = await Promise.all(lyftPromises)
-   lyft = lyft.filter(x => x.geometry.coordinates !== 'error');
-
-   /**
-      * Data format:
-      * [
-      *   {
-      *     waypoints: [
-      *      {coordinates: [-122.3907988, 37.7664413], timestamp: 1554772579000}
-      *      {coordinates: [-122.3908298,37.7667706], timestamp: 1554772579010}
-      *       ...,
-      *      {coordinates: [-122.4485672, 37.8040182], timestamp: 1554772580200}
-      *     ]
-      *   }
-      * ]
-      */
-
-   const tripsLayer = [...lime, ...lyft].map(row => {
-      // const mod = ;
-
-      const coords = row.geometry.coordinates.map((x,i) => {
-         return [x[0], x[1], i * 1000]
-      })
+   // lyft = lyft.filter(x => x.geometry.coordinates !== 'error');
 
 
-      return {
-         vendor: 0,
-         segments: coords
+
+   uber = uber.filter(row => row['Product Type'] !== 'UberEATS Marketplace')
+   .filter(row => row['Trip or Order Status'] === 'COMPLETED')
+
+   const uberPromises = uber.map(async row => {
+      const startCoordinates = {
+         Latitude: Number(row['Begin Trip Lat']),
+         Longitude: Number(row['Begin Trip Lng'])
       }
-   })
+      const endCoordinates = {
+         Latitude: Number(row['Dropoff Lat']),
+         Longitude: Number(row['Dropoff Lng'])
+      }
+      const { polyline, distance, routeError } = await route(startCoordinates, endCoordinates);
+      // routeError && console.log(routeError)
 
-   fs.writeFile('output/mobility-data.json', JSON.stringify({
-      type: 'FeatureCollection',
-      features: [...lime, ...lyft]
-   }), function(err) {
-       if(err) {
-           return console.log(err);
-       }
-       console.log("File was saved!");
-   });
+      const mod = {
+         type: 'Feature',
+         geometry: {
+            type: 'LineString',
+            coordinates: routeError ? 'error' : polyline,
+         },
+         properties: {}
+      };
+      mod.properties.cost = currency[row['Fare Currency']] * Number(row['Fare Amount']);
+      mod.properties.provider = 'uber';
+      mod.properties.startDate = new Date(row['Begin Trip Time']);
+      mod.properties.endDate = new Date(row['Dropoff Time']);
+      mod.properties.distance = Number(row['Distance (miles)']);
+      mod.properties.startCoordinates = [Number(row['Begin Trip Lng']), Number(row['Begin Trip Lat'])];
+      mod.properties.endCoordinates = [Number(row['Dropoff Lng']), Number(row['Dropoff Lat'])];
+      return mod;
+   })
+   uber = await Promise.all(uberPromises)
+
+
+
+   const jumpPromises = jump.map(async row => {
+      console.log(row)
+      // console.log(row['Begin Rental Address'])
+      const startGeocode = await geocode(row['Begin Rental Address']);
+      // console.log(geoCode);
+      const endGeocode = await geocode(row['Finish Rental Address']);
+
+      const { polyline, distance, routeError } = await route(startGeocode, endGeocode);
+      routeError && console.log('jump error ' +routeError)
+
+      const mod = {
+         type: 'Feature',
+         geometry: {
+            type: 'LineString',
+            coordinates: routeError ? 'error' : polyline,
+         },
+         properties: {}
+      };
+      mod.properties.cost = Number(row['Fare Amount'].toString().substring(1));
+      console.log(mod.properties.cost)
+      mod.properties.provider = 'jump';
+      mod.properties.startDate = new Date(row['Begin Rental Time']);
+      mod.properties.endDate = new Date(row['Finish Rental Time']);
+      mod.properties.distance = Number(row['Distance (miles)']);
+      mod.properties.startCoordinates = [startGeocode.Longitude, startGeocode.Latitude];
+      mod.properties.endCoordinates = [endGeocode.Longitude, endGeocode.Latitude];
+      return mod;
+   })
+   jump = await Promise.all(jumpPromises)
+
+   const output = [...lime, ...uber, ...lyft, ...jump]
+      .filter(x => x.geometry.coordinates !== 'error')
+
    fs.writeFile('client-react/src/mobility-data.json', JSON.stringify({
       type: 'FeatureCollection',
-      features: [...lime, ...lyft]
+      features: output
    }), function(err) {
-       if(err) {
-           return console.log(err);
-       }
-       console.log("File was saved!");
-   });
 
-   fs.writeFile('client-react/src/trips-data.json', JSON.stringify({
-      tripsLayer
-   }), function(err) {
-       if(err) {
-           return console.log(err);
-       }
        console.log("File was saved!");
    });
 }
