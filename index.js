@@ -33,18 +33,32 @@ async function geocode(query) {
    } else {
       return 'error';
    }
-
 }
 
 async function route(start, end, mode = 'car',) {
    const url = `https://route.api.here.com/routing/7.2/calculateroute.json?app_id=${here.id}&app_code=${here.code}&waypoint0=geo!${start.Latitude},${start.Longitude}&waypoint1=geo!${end.Latitude},${end.Longitude}&mode=fastest;${mode};traffic:disabled&routeattributes=shape`
-   const data = await ( await fetch(url) ).json();
-   return await data.response.route[0].shape.map(
-      x => [
-         Number(x.split(",")[1]),
-         Number(x.split(",")[0])
-      ]
-   );
+   const data = await ( await fetch(url).catch(e => 'error') ).json();
+   if (data.hasOwnProperty('route')) {
+      const distance = await data.response.route[0].summary.distance;
+      const polyline = await data.response.route[0].shape.map(
+         x => [
+            Number(x.split(",")[1]),
+            Number(x.split(",")[0])
+         ]
+      );
+      return {
+         routeError: false,
+         distance: distance,
+         polyline: polyline
+      }
+   } else {
+      return {
+         routeError: true,
+         distance: '',
+         polyline: []
+      }
+   }
+
 }
 
 async function start() {
@@ -63,34 +77,64 @@ async function start() {
       mod.properties.endCoordinates = [Number(row.END_LONGITUDE), Number(row.END_LATITUDE)];
       return mod;
    })
+   .filter(x => x.geometry.coordinates.length > 1);
 
    const lyftPromises = lyft.map(async row => {
       const startGeocode = await geocode(row.origin);
       const endGeocode = await geocode(row.destination);
 
+      const { polyline, distance, routeError } = await route(startGeocode, endGeocode);
       const mod = {
          type: 'Feature',
          geometry: {
             type: 'LineString',
-            coordinates: (startGeocode === 'error' || endGeocode === 'error') ? [0,0] : await route(startGeocode, endGeocode)
+            coordinates: routeError ? 'error' : polyline
          },
          properties: {}
       };
 
-      mod.provider = 'Lyft'
+      mod.properties.provider = 'Lyft'
       mod.properties.cost = Number(row.total.substring(1));
       mod.properties.startDate = row.date;
       mod.properties.startAddress = row.origin;
       mod.properties.endAddress = row.destination;
+      mod.properties.distance =  routeError ? 0 : distance * 0.00062137;
 
       mod.properties.startCoordinates = startGeocode !== 'error' ? [startGeocode.Longitude, startGeocode.Latitude] : [0,0];
       mod.properties.endCoordinates = endGeocode !== 'error' ? [endGeocode.Longitude, endGeocode.Latitude] : [0,0];
       return mod;
    })
 
-   // wait until all promises resolve
    lyft = await Promise.all(lyftPromises)
+   lyft = lyft.filter(x => x.geometry.coordinates !== 'error');
 
+   /**
+      * Data format:
+      * [
+      *   {
+      *     waypoints: [
+      *      {coordinates: [-122.3907988, 37.7664413], timestamp: 1554772579000}
+      *      {coordinates: [-122.3908298,37.7667706], timestamp: 1554772579010}
+      *       ...,
+      *      {coordinates: [-122.4485672, 37.8040182], timestamp: 1554772580200}
+      *     ]
+      *   }
+      * ]
+      */
+
+   const tripsLayer = [...lime, ...lyft].map(row => {
+      // const mod = ;
+
+      const coords = row.geometry.coordinates.map((x,i) => {
+         return [x[0], x[1], i * 1000]
+      })
+
+
+      return {
+         vendor: 0,
+         segments: coords
+      }
+   })
 
    fs.writeFile('output/mobility-data.json', JSON.stringify({
       type: 'FeatureCollection',
@@ -101,7 +145,24 @@ async function start() {
        }
        console.log("File was saved!");
    });
+   fs.writeFile('client-react/src/mobility-data.json', JSON.stringify({
+      type: 'FeatureCollection',
+      features: [...lime, ...lyft]
+   }), function(err) {
+       if(err) {
+           return console.log(err);
+       }
+       console.log("File was saved!");
+   });
 
+   fs.writeFile('client-react/src/trips-data.json', JSON.stringify({
+      tripsLayer
+   }), function(err) {
+       if(err) {
+           return console.log(err);
+       }
+       console.log("File was saved!");
+   });
 }
 
 

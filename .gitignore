@@ -3,3 +3,6 @@ node_modules
 data
 credentials.js
 output
+client-react/node_modules
+client-react/src/trips-data.json
+client-react/src/mobility-data.json

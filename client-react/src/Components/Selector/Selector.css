@@ -1,0 +1,47 @@
+.selector-outside {
+   border: 1px solid #F2F2F2;
+   border-radius: 3px;
+   box-shadow: 0px 1px 5px #F2F2F2;
+   height: 35px;
+   width: 100%;
+   background: white;
+   display: grid;
+
+}
+
+.selector-option {
+   color: #737373;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   cursor: pointer;
+   font-size: 14px;
+}
+
+.first-center-selector-option {
+   border-left: 1px solid #F2F2F2;
+   border-right: 1px solid #F2F2F2;
+}
+
+.center-selector-option {
+   border-right: 1px solid #F2F2F2;
+}
+
+.selector-active {
+   border: 1px solid black !important;
+   color: black;
+}
+
+.left-selector-active {
+   border: 1px solid black !important;
+   border-top-left-radius: 3px;
+   border-bottom-left-radius: 3px;
+   color: black;
+}
+
+.right-selector-active {
+   border: 1px solid black !important;
+   border-top-right-radius: 3px;
+   border-bottom-right-radius: 3px;
+   color: black;
+}
