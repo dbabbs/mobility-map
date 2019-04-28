@@ -1,8 +1,13 @@
 import React from 'react';
 import {StaticMap} from 'react-map-gl';
 import {GeoJsonLayer, PathLayer} from '@deck.gl/layers';
+import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
-import {TripsLayer} from '@deck.gl/geo-layers';
+
+
+import Selector from './Components/Selector/Selector';
+import Section from './Components/SidebarSection/Section'
+import ProviderList from './Components/ProviderList/ProviderList';
 
 import Sidebar from './Components/Sidebar/Sidebar';
 
@@ -13,6 +18,8 @@ import tripsData from './trips-data.json';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGJhYmJzIiwiYSI6ImNqN2d2aDBvczFkNmEycWt5OXo0YnY3ejkifQ.h1gKMs1F18_AhB09s91gWg';
 const initialViewState = { longitude: -122.335167, latitude: 47.608013, zoom: 11, pitch: 0, bearing: 0};
+const sizeLookup = { 1: 500000, 2: 200000, 3: 100000, 4: 50000, 5: 25000, 6: 12500, 7: 6250, 8: 3000,
+   9: 1200, 10: 600, 11: 400, 12: 200, 13: 100, 14: 80, 15: 40, 16: 20, 17: 10, 18: 5, 19: 5, 20:5}
 
 
 class App extends React.Component {
@@ -24,11 +31,68 @@ class App extends React.Component {
          tripsData: tripsData,
          trips: [],
          time: 0,
-         curr: 0
+         curr: 0,
+         providers: [
+            {
+               name: 'uber',
+               color: 'black',
+               distance: 3184,
+               trips: 122,
+               price: 800,
+               modes: ['car']
+            },
+            {
+               name: 'jump',
+               color: '#E73A14',
+               distance: 2124,
+               trips: 35,
+               price: 112,
+               modes: ['bike', 'scooter']
+            },
+            {
+               name: 'lime',
+               color: '#25CF00',
+               distance: 1241,
+               trips: 80,
+               price: 201,
+               modes: ['bike', 'scooter']
+            },
+            {
+               name: 'lyft',
+               color: '#FE00D8',
+               distance: 400,
+               trips: 14,
+               price: 181,
+               modes: ['car']
+            },
+         ],
+         activeMetric: 'trips',
+         activeLayer: 'polylines',
+         activeView: 'single'
       }
+   }
+   changeActive = (type, value) => {
+      // console.log(t);
+      if (type === 'metric') {
+         this.setState({
+            activeMetric: value
+         })
+      } else if (type === 'layer') {
+         this.setState({
+            activeLayer: value
+         })
+      } else if (type === 'view') {
+         this.setState({
+            activeView: value
+         })
+      }
+
    }
 
    componentDidMount = () => {
+
+      document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
+
       this.animate();
    }
    animate() {
@@ -50,7 +114,6 @@ class App extends React.Component {
    }
 
    renderTooltip = () => {
-      console.log('yitt')
       const {x, y, tooltip} = this.state;
 
       if (tooltip) {
@@ -88,34 +151,13 @@ class App extends React.Component {
    }
 
    render() {
-      // console.log(this.state.tripsData);
-      // const geojsonLayer = new GeoJsonLayer({
-      //    id: 'geojson-layer',
-      //    data: this.state.data,
-      //    pickable: true,
-      //    stroked: false,
-      //    lineWidthScale: 1,
-      //    lineWidthMinPixels: 1,
-      //    getLineColor: [0, 0, 0, 200],
-      //    getLineWidth: 1,
-      //    getElevation: 30,
-      // });
-      // const tripsLayer = new TripsLayer({
-      //    id: 'trips-layer',
-      //    data: this.state.trips,
-      //    getPath: d => d.waypoints.map(p => [p.coordinates[0], p.coordinates[1], p.timestamp]),
-      //    getColor: [250,250,250],
-      //    opacity: 1,
-      //    widthMinPixels: 5,
-      //    rounded: true,
-      //    trailLength: 200,
-      //    currentTime: 100
-      // });
 
       const d = this.state.data.features.map(row => {
          return row.geometry.coordinates.slice(0, this.state.curr);
       })
-      // console.log(this.state.curr);
+
+      const hexd = this.state.data.features.map(x => x.geometry.coordinates).flat();
+
       const pathLayer = new PathLayer({
          id: 'path-layer',
          data: d,
@@ -128,18 +170,70 @@ class App extends React.Component {
          onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
       });
 
+      const hexLayer = new HexagonLayer({
+         id: 'hexagon-layer',
+         data: hexd,
+         pickable: true,
+         extruded: true,
+         radius: sizeLookup[Math.round(this.state.zoom)],
+         elevationScale: 4,
+         getPosition: d => d,
+         // onHover: ({object, x, y}) => {}
+      });
+
+      const layers = this.state.activeLayer === 'polylines' ? [pathLayer] : [hexLayer];
       return (
          <>
             {
                this.renderTooltip()
             }
+            <Sidebar>
+               <h1>Dylan's Mobility Map</h1>
+               <p>An overview of my mobility service activity across cities. With the exception of Lyft, all data was acquired through GDPR requests.</p>
 
-            <Sidebar />
+               <Section>
+                  <h2>View Analytics</h2>
+                  <Selector
+                     type="metric"
+                     options={['trips', 'price', 'distance']}
+                     active={this.state.activeMetric}
+                     changeActive={this.changeActive}
+                  />
+                  <ProviderList
+                     providers={this.state.providers}
+                     active={this.state.activeMetric}
+                   />
+               </Section>
+               <Section>
+                  <h2>Toggle Layer</h2>
+                  <Selector
+                     type="layer"
+                     options={['polylines', 'hexbins']}
+                     active={this.state.activeLayer}
+                     changeActive={this.changeActive}
+                  />
+               </Section>
+               <Section>
+                  <h2>Toggle Grid View</h2>
+                  <Selector
+                     type="view"
+                     options={['single', 'grid']}
+                     active={this.state.activeView}
+                     changeActive={this.changeActive}
+                  />
+               </Section>
+            </Sidebar>
             <DeckGL
                initialViewState={initialViewState}
                controller={true}
-               layers={[pathLayer]}
+               layers={layers}
                minZoom={3}
+               onViewStateChange={(view) => {
+                  if (view.viewState.zoom > 1) {
+                     this.setState({zoom: view.viewState.zoom})
+                  }
+
+               }}
             >
                <StaticMap
                   mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
@@ -151,5 +245,9 @@ class App extends React.Component {
    }
 
 }
+
+/* TODO:
+<div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+*/
 
 export default App;

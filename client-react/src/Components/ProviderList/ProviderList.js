@@ -23,8 +23,6 @@ class ProviderList extends React.Component {
       const max = Math.max.apply(null,
          this.props.providers.map(x => x[this.props.active])
       )
-      console.log(max);
-
       return(
          <>
             {
