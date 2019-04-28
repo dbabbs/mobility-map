@@ -8,11 +8,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
 }
-
 h1 {
    font-size: 19px;
    font-weight: 500;
@@ -55,4 +54,8 @@ p {
 .tooltip .value {
    color: black;
    display: inline-block;
+}
+
+p .info {
+   margin-bottom: 0px !important;
 }

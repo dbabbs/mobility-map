@@ -1,6 +1,6 @@
 import React from 'react';
 import {StaticMap} from 'react-map-gl';
-import {GeoJsonLayer, PathLayer} from '@deck.gl/layers';
+import {GeoJsonLayer, PathLayer, ArcLayer} from '@deck.gl/layers';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
 
@@ -10,6 +10,7 @@ import mapStyle from './style.json'
 import Selector from './Components/Selector/Selector';
 import Section from './Components/SidebarSection/Section'
 import ProviderList from './Components/ProviderList/ProviderList';
+import BottomBar from './Components/BottomBar/BottomBar';
 
 import Sidebar from './Components/Sidebar/Sidebar';
 
@@ -24,6 +25,16 @@ const sizeLookup = { 1: 500000, 2: 200000, 3: 100000, 4: 50000, 5: 25000, 6: 125
    9: 1200, 10: 600, 11: 400, 12: 200, 13: 100, 14: 80, 15: 40, 16: 20, 17: 10, 18: 5, 19: 5, 20:5}
 
 
+
+/*
+TODO: slick transition between button selectors
+TODO: Design map style
+TODO: add icon attribution
+TODO: camera panning animation
+TODO: Add XYZ Space
+TODO: Grid view
+*/
+
 class App extends React.Component {
 
    constructor(props) {
@@ -33,12 +44,12 @@ class App extends React.Component {
          tripsData: tripsData,
          trips: [],
          time: 0,
-         curr: 0,
+         curr: data.length - 1, //0,
          providers: [
             {
                name: 'uber',
-               color: 'black',
-               color2: [0, 0, 0],
+               color: '#276EF1',
+               color2: [39, 110, 241],
                distance: 3184,
                trips: 122,
                price: 800,
@@ -68,7 +79,7 @@ class App extends React.Component {
             {
                name: 'lyft',
                color: '#FE00D8',
-               color: [254, 0, 126],
+               color2: [254, 0, 126],
                distance: 400,
                trips: 14,
                price: 181,
@@ -111,16 +122,16 @@ class App extends React.Component {
       )
 
 
-      const timer = setInterval(() => {
-         // console.log(this.state.curr + 1)
-         this.setState({
-            curr: this.state.curr + 1
-         })
-         if (this.state.curr === max) {
-            clearInterval(timer)
-         }
-
-      }, 200)
+      // const timer = setInterval(() => {
+      //    // console.log(this.state.curr + 1)
+      //    this.setState({
+      //       curr: this.state.curr + 1
+      //    })
+      //    if (this.state.curr === max) {
+      //       clearInterval(timer)
+      //    }
+      //
+      // }, 200)
    }
 
    renderTooltip = () => {
@@ -184,23 +195,23 @@ class App extends React.Component {
       //    this.hexToRgb(this.state.providers[1].color)
       // )
 
-      console.log(
-         this.state.data.features.map(x => x.properties.provider)
-      )
-      console.log()
+      // console.log(
+      //    this.state.data.features.map(x => x.properties.provider)
+      // )
+      // console.log()
 
-      const d = this.state.data.features.map((row, i) => {
-         console.log(this.state.curr);
-         row.geometry.coordinates = row.geometry.coordinates.slice(0, this.state.curr);
-         return row;
-      })
+      // const d = this.state.data.features.map((row, i) => {
+      //    // console.log(this.state.curr);
+      //    row.geometry.coordinates = row.geometry.coordinates.slice(0, this.state.curr);
+      //    return row;
+      // })
       // console.log(d);
 
       const hexd = this.state.data.features.map(x => x.geometry.coordinates).flat();
-      console.log(this.state.data);
+      // console.log(this.state.data);
       const pathLayer = new PathLayer({
          id: 'path-layer',
-         data: d,
+         data: this.state.data,
          pickable: true,
          widthScale: 20,
          widthMinPixels: 2,
@@ -224,7 +235,26 @@ class App extends React.Component {
          // onHover: ({object, x, y}) => {}
       });
 
-      const layers = this.state.activeLayer === 'polylines' ? [pathLayer] : [hexLayer];
+      const arcLayer = new ArcLayer({
+         id: 'arc-layer',
+         data: this.state.data.features,
+         pickable: true,
+         getWidth: 12,
+         getSourcePosition: d => d.properties.startCoordinates,
+         getTargetPosition: d => d.properties.endCoordinates,
+         getSourceColor: d => [Math.sqrt(d.inbound), 140, 0],
+         getTargetColor: d => [Math.sqrt(d.outbound), 140, 0],
+      });
+      const layers = [];
+      if (this.state.activeLayer === 'polylines') {
+         layers.push(pathLayer);
+      }
+      if (this.state.activeLayer === 'hexbins') {
+         layers.push(hexLayer);
+      }
+      if (this.state.activeLayer === 'arcs') {
+         layers.push(arcLayer);
+      }
       return (
          <>
             {
@@ -247,15 +277,21 @@ class App extends React.Component {
                      providers={this.state.providers}
                      active={this.state.activeMetric}
                    />
+                <p style={{margin: 0}}>
+                   Filter a particular company by clicking on it.
+                </p>
                </Section>
                <Section>
                   <h2>Toggle Layer</h2>
                   <Selector
                      type="layer"
-                     options={['polylines', 'hexbins']}
+                     options={['polylines', 'hexbins', 'arcs']}
                      active={this.state.activeLayer}
                      changeActive={this.changeActive}
                   />
+                  <p style={{margin: 0}}>
+                     Switch between individual trip lines and aggregated locations.
+                  </p>
                </Section>
                <Section>
                   <h2>Toggle Grid View</h2>
@@ -265,8 +301,14 @@ class App extends React.Component {
                      active={this.state.activeView}
                      changeActive={this.changeActive}
                   />
+               <p style={{margin: 0}}>
+                     Switch between a single map view and multiple city map views.
+                  </p>
                </Section>
             </Sidebar>
+            <BottomBar
+               data={this.state.data}
+            />
             <DeckGL
                initialViewState={initialViewState}
                controller={true}

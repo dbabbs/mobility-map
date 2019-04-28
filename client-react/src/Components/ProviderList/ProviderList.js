@@ -4,7 +4,6 @@ import './ProviderList.css';
 import carIcon from '../../icons/car.svg';
 import bikeIcon from '../../icons/bike.svg';
 import scooterIcon from '../../icons/scooter.svg';
-console.log(carIcon);
 
 const icons = {
    car: carIcon,
@@ -32,7 +31,9 @@ class ProviderList extends React.Component {
                   // console.log(provider);
                   const style = {
                      background: provider.active ? provider.color : '#DBDBDB',
-                     width: provider[this.props.active] / max * 100 + '%'
+                     width: provider.active ?
+                     provider[this.props.active] / max * 100 + '%' :
+                     '0%'
                   }
                   return <div
                         key={i}
@@ -49,7 +50,7 @@ class ProviderList extends React.Component {
                         <span className="sub">
                            {
                               this.props.active === 'price' ?
-                              `${provider[this.props.active]}` :
+                              `$${provider[this.props.active]}` :
                               `${provider[this.props.active]} ${units[this.props.active]}`
                            }
                         </span>

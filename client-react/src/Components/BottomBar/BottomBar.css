@@ -1,0 +1,14 @@
+.bottom-bar {
+   position: absolute;
+   left: calc(275px + 30px);
+   width: calc(100vw - 275px - 30px - 15px);
+   bottom: 15px;
+   height: 110px;
+   background: #F9FAF9;
+   z-index: 10000;
+   border-radius: 2px;
+   padding: 15px;
+   box-sizing: border-box;
+   display: flex;
+   flex-direction: column;
+}
