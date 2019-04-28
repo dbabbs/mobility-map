@@ -38,6 +38,7 @@ class App extends React.Component {
             {
                name: 'uber',
                color: 'black',
+               color2: [0, 0, 0],
                distance: 3184,
                trips: 122,
                price: 800,
@@ -47,6 +48,7 @@ class App extends React.Component {
             {
                name: 'jump',
                color: '#E73A14',
+               color2: [231, 58, 20],
                distance: 2124,
                trips: 35,
                price: 112,
@@ -56,6 +58,7 @@ class App extends React.Component {
             {
                name: 'lime',
                color: '#25CF00',
+               color2: [37, 207, 0],
                distance: 1241,
                trips: 80,
                price: 201,
@@ -65,6 +68,7 @@ class App extends React.Component {
             {
                name: 'lyft',
                color: '#FE00D8',
+               color: [254, 0, 126],
                distance: 400,
                trips: 14,
                price: 181,
@@ -174,22 +178,37 @@ class App extends React.Component {
       })
    }
 
-   render() {
 
-      const d = this.state.data.features.map(row => {
-         return row.geometry.coordinates.slice(0, this.state.curr);
+   render() {
+      // console.log(
+      //    this.hexToRgb(this.state.providers[1].color)
+      // )
+
+      console.log(
+         this.state.data.features.map(x => x.properties.provider)
+      )
+      console.log()
+
+      const d = this.state.data.features.map((row, i) => {
+         console.log(this.state.curr);
+         row.geometry.coordinates = row.geometry.coordinates.slice(0, this.state.curr);
+         return row;
       })
+      // console.log(d);
 
       const hexd = this.state.data.features.map(x => x.geometry.coordinates).flat();
-
+      console.log(this.state.data);
       const pathLayer = new PathLayer({
          id: 'path-layer',
          data: d,
          pickable: true,
          widthScale: 20,
          widthMinPixels: 2,
-         getPath: d => d,
-         getColor: d => [255,255,255],
+         getPath: d => d.geometry.coordinates,//.slice(0, this.state.curr),
+         getColor: d => {
+            const provider = d.properties.provider.charAt(0).toLowerCase() + d.properties.provider.substring(1);
+            return this.state.providers.filter(x => x.name === provider)[0].color2;
+         },
          getWidth: d => 1,
          onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
       });
