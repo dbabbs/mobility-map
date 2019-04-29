@@ -42,7 +42,7 @@ class Histogram extends React.Component {
       const histogram = d3.histogram().value(function(d) {
          return d;
       }).domain(x.domain()).thresholds(x.ticks(
-         d3.timeMonth //d3.timeMonth //: d3.timeWeek
+         d3.timeMonth
       ));
 
       const svg = d3.select("#chart").append("svg")

@@ -4,7 +4,7 @@ import {GeoJsonLayer, PathLayer, ArcLayer} from '@deck.gl/layers';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
 
-// import LinearInterpolator from '@deck.gl/core';
+import {View, MapView} from '@deck.gl/core';
 
 
 
@@ -21,6 +21,8 @@ import Sidebar from './Components/Sidebar/Sidebar';
 // import {experimental} from 'deck.gl';
 
 import DeckGL from '@deck.gl/react';
+
+// import {MapView} from '@deck.gl/core';
 import data from './mobility-data.json';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGJhYmJzIiwiYSI6ImNqN2d2aDBvczFkNmEycWt5OXo0YnY3ejkifQ.h1gKMs1F18_AhB09s91gWg';
@@ -36,6 +38,80 @@ const initialViewState = {
    pitch: 60,
    bearing: -20
 };
+
+const mapViews = [
+   {
+      longitude: -122.35021467990396,
+      latitude: 47.623954436942995,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //Berlin
+   {
+      longitude: 13.404954,
+      latitude:  52.520008,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //SF
+   {
+      longitude: -122.41251212803706,
+      latitude: 37.77116905512072,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //San Diego
+   {
+      longitude: -117.19453161713136,
+      latitude: 32.7459306899641,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //Chicago
+   {
+      longitude: -87.65142984345374,
+      latitude: 41.87225195677442,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //San Juan
+   {
+      longitude: -66.06411721833007,
+      latitude: 18.465526764926423,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //Detroit
+   {
+      longitude: -83.03440701349251,
+      latitude: 42.34305805549184,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //Instanbul
+   {
+      longitude: 28.979530,
+      latitude: 41.015137,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   },
+   //Amsterdam
+   {
+      longitude: 4.899431,
+      latitude: 52.379189,
+      zoom: 8,
+      pitch: 60,
+      bearing: -20
+   }
+]
 
 const transitionInterpolator = new FlyToInterpolator();
 
@@ -53,7 +129,15 @@ class App extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
-         viewState: initialViewState,
+         viewState0: mapViews[0],
+         viewState1: mapViews[1],
+         viewState2: mapViews[2],
+         viewState3: mapViews[3],
+         viewState4: mapViews[4],
+         viewState5: mapViews[5],
+         viewState6: mapViews[6],
+         viewState7: mapViews[7],
+         viewState8: mapViews[8],
          data: data,
          trips: [],
          time: 0,
@@ -96,7 +180,7 @@ class App extends React.Component {
       }
    }
    changeActive = (type, value) => {
-
+      console.log(type, value)
       if (type === 'metric') {
          this.setState({
             activeMetric: value
@@ -109,6 +193,7 @@ class App extends React.Component {
          this.setState({
             activeView: value
          })
+         // this.animate();
       }
 
    }
@@ -131,13 +216,15 @@ class App extends React.Component {
    animate() {
 
       //
+      console.log('aniamting')
       const data = this.state.data.features
          .filter(x => x.geometry);
       const max = Math.max.apply(
          null, data.map(x => x.geometry.coordinates.length)
       )
       this.setState({
-         transitionActive: true
+         transitionActive: true,
+         curr: 0
       })
       setTimeout(() => {
          const timer = setInterval(() => {
@@ -218,8 +305,8 @@ class App extends React.Component {
    }
 
    onLoad = () => {
-      this.rotateCamera();
-      this.animate();
+      // this.rotateCamera();
+      // this.animate();
    }
 
    toggleProviders = (p) => {
@@ -245,11 +332,24 @@ class App extends React.Component {
 
    }
 
-   onViewStateChange = ({viewState}) => {
-      this.setState({viewState});
-      if (viewState.zoom > 1) {
-         this.setState({zoom: viewState.zoom})
+   onViewStateChange = (evt) => {
+      console.log(evt)
+      const key = 'viewState' + evt.viewId;
+      console.log(key)
+      this.setState({
+         [key]: evt.viewState
+      }, () => {
+         console.log(
+            this.state[key]
+         )
       }
+
+      )
+
+      // this.setState({viewState});
+      // if (viewState.zoom > 1) {
+      //    this.setState({zoom: viewState.zoom})
+      // }
   }
 
 
@@ -293,15 +393,19 @@ class App extends React.Component {
       const pathLayer = new PathLayer({
          id: 'path-layer',
          data: this.state.transitionActive ? transitionData : data,
-         pickable: true,
-         widthScale: 20,
+
+         widthScale: 3,
          widthMinPixels: 3,
          getPath: d => this.state.transitionActive ? d.coordinates : d.geometry.coordinates,//.slice(0, this.state.curr),
          getColor: d => {
             let provider = this.state.transitionActive ? d.provider : d.properties.provider;
             return this.state.providers.filter(x => x.name === provider)[0].color2;
          },
-         getWidth: d => 1,
+         rounded: true,
+         getWidth: d => 10,
+         pickable: true,
+         autoHighlight: true,
+         highlightColor: [255,255,255],
          onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
       });
 
@@ -337,6 +441,103 @@ class App extends React.Component {
          layers.push(arcLayer);
       }
 
+
+      const numViews = 4;
+
+
+      let views = [
+         {
+            id: '0',
+            width: '100%',
+            height: '100%'
+         },
+      ]
+
+      if (this.state.activeView === 'grid') {
+         const size1 = 1 / 3 * 100 +'%';
+         const size2 = 2 / 3 * 100 + '%';
+         const size3 = '100%';
+         views = [
+
+            //Row 1
+            {
+               id: '0',
+               width: size1,
+               height: size1,
+               controller: true
+            },
+            {
+               id: '1',
+               x: size1,
+               y: 0,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+            {
+               id: '2',
+               x: size2,
+               y: 0,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+
+            //Row 2
+            {
+               id: '3',
+               x: 0,
+               y: size1,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+            {
+               id: '4',
+               x: size1,
+               y: size1,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+            {
+               id: '5',
+               x: size2,
+               y: size1,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+
+            //Row 3
+            {
+               id: '6',
+               x: 0,
+               y: size2,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+            {
+               id: '7',
+               x: size1,
+               y: size2,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+            {
+               id: '8',
+               x: size2,
+               y: size2,
+               width: size1,
+               height: size1,
+               controller: true
+            },
+
+         ]
+      }
+
       return (
          <>
             {
@@ -344,7 +545,7 @@ class App extends React.Component {
             }
             <Sidebar>
                <h1>Dylan's Mobility Map</h1>
-               <p>An overview of my mobility service activity across cities. With the exception of Lyft, all data was acquired through GDPR requests.</p>
+               <p>An overview of my mobility service trips across cities.</p>
 
                <Section>
                   <h2>View Analytics</h2>
@@ -376,7 +577,9 @@ class App extends React.Component {
                      Switch between individual trip lines and aggregated locations.
                   </p>
                </Section>
-               <Section>
+               <Section
+                  paddingBottom={0}
+                >
                   <h2>Toggle Grid View</h2>
                   <Selector
                      type="view"
@@ -386,32 +589,74 @@ class App extends React.Component {
                   />
                <p style={{margin: 0}}>
                      Switch between a single map view and multiple city map views.
-                  </p>
+               </p>
                </Section>
             </Sidebar>
-            <BottomBar
-               data={data}
-               min={min}
-               max={max}
-               currMin={this.state.minDate}
-               currMax={this.state.maxDate}
-               filterDate={this.filterDate}
-            />
-            <DeckGL
+            {
+
+               <BottomBar
+                  data={data}
+                  min={min}
+                  max={max}
+                  currMin={this.state.minDate}
+                  currMax={this.state.maxDate}
+                  filterDate={this.filterDate}
+               />
+
+            }
+            {
+               /*
                initialViewState={initialViewState}
                viewState={this.state.viewState}
-               onLoad={this.onLoad}
-               controller={true}
-               layers={layers}
-               minZoom={3}
                onViewStateChange={this.onViewStateChange}
-            >
-               <StaticMap
-                  mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-                  mapStyle={mapStyle}
-                  mapStyle="mapbox://styles/mapbox/dark-v9"
-               />
-            </DeckGL>
+               */
+            }
+               <DeckGL
+
+
+                  onLoad={this.onLoad}
+                  layers={layers}
+                  minZoom={3}
+                  onViewStateChange={this.onViewStateChange}
+
+
+               >
+               {
+                  /**
+                  longitude={-122.35021467990396}
+                  latitude={47.623954436942995}
+                  zoom={10}
+                  */
+               }
+               {
+                  views.map((x,i) => {
+                     return (
+                        <MapView
+                           x={x.x}
+                           y={x.y}
+                           width={x.width}
+                           height={x.height}
+                           controller={x.controller}
+                           id={i.toString()}
+                           key={i}
+
+                           initialViewState={this.state['viewState' + i]}
+                           viewState={this.state['viewState' + i]}
+                        >
+                           <StaticMap
+                              mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+                              mapStyle="mapbox://styles/mapbox/dark-v9"
+                           />
+                        </MapView>
+                     )
+                  })
+               }
+
+
+               </DeckGL>
+
+
+
          </>
       );
    }

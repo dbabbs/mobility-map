@@ -7,24 +7,24 @@ const here = require('./credentials.js');
 
 
 let lime = Papa.parse(
-   fs.readFileSync('./data/lime.csv', 'utf8'),
+   fs.readFileSync('../data/lime.csv', 'utf8'),
    {header: true}
 ).data;
 
 let lyft = Papa.parse(
-   fs.readFileSync('./data/lyft.csv', 'utf8'),
+   fs.readFileSync('../data/lyft.csv', 'utf8'),
    {header: true}
 ).data;
 lyft = lyft.filter((x,i) => i !== lyft.length -1)
 
 
 let uber = Papa.parse(
-   fs.readFileSync('./data/uber.csv', 'utf8'),
+   fs.readFileSync('../data/uber.csv', 'utf8'),
    {header: true}
 ).data;
 
 let jump = Papa.parse(
-   fs.readFileSync('./data/jump.csv', 'utf8'),
+   fs.readFileSync('../data/jump.csv', 'utf8'),
    {header: true}
 ).data
 .filter(x => x['Rental Status'] !== '');
@@ -102,7 +102,6 @@ async function start() {
       mod.properties.cost = Number(row.COST_AMOUNT_CENTS) / 100;
       mod.properties.provider = 'lime';
       mod.properties.startDate = new Date(row.STARTED_AT);
-      mod.properties.endDate = new Date(row.COMPLETED_AT);
       mod.properties.distance = row.DISTANCE_METERS * 0.00062137;
       mod.properties.startCoordinates = [Number(row.START_LONGITUDE), Number(row.START_LATITUDE)];
       mod.properties.endCoordinates = [Number(row.END_LONGITUDE), Number(row.END_LATITUDE)];
@@ -127,8 +126,7 @@ async function start() {
       mod.properties.provider = 'lyft'
       mod.properties.cost = Number(row.total.substring(1));
       mod.properties.startDate = new Date(row.date);
-      mod.properties.startAddress = new Date(row.origin);
-      mod.properties.endAddress = row.destination;
+
       mod.properties.distance =  routeError ? 0 : distance * 0.00062137;
 
       mod.properties.startCoordinates = startGeocode !== 'error' ? [startGeocode.Longitude, startGeocode.Latitude] : [0,0];
@@ -167,7 +165,6 @@ async function start() {
       mod.properties.cost = currency[row['Fare Currency']] * Number(row['Fare Amount']);
       mod.properties.provider = 'uber';
       mod.properties.startDate = new Date(row['Begin Trip Time']);
-      mod.properties.endDate = new Date(row['Dropoff Time']);
       mod.properties.distance = Number(row['Distance (miles)']);
       mod.properties.startCoordinates = [Number(row['Begin Trip Lng']), Number(row['Begin Trip Lat'])];
       mod.properties.endCoordinates = [Number(row['Dropoff Lng']), Number(row['Dropoff Lat'])];
@@ -199,7 +196,6 @@ async function start() {
       console.log(mod.properties.cost)
       mod.properties.provider = 'jump';
       mod.properties.startDate = new Date(row['Begin Rental Time']);
-      mod.properties.endDate = new Date(row['Finish Rental Time']);
       mod.properties.distance = Number(row['Distance (miles)']);
       mod.properties.startCoordinates = [startGeocode.Longitude, startGeocode.Latitude];
       mod.properties.endCoordinates = [endGeocode.Longitude, endGeocode.Latitude];
@@ -210,7 +206,7 @@ async function start() {
    const output = [...lime, ...uber, ...lyft, ...jump]
       .filter(x => x.geometry.coordinates !== 'error')
 
-   fs.writeFile('client-react/src/mobility-data.json', JSON.stringify({
+   fs.writeFile('../src/mobility-data.json', JSON.stringify({
       type: 'FeatureCollection',
       features: output
    }), function(err) {
