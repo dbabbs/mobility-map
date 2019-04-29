@@ -26,6 +26,7 @@ class ProviderList extends React.Component {
 
    render() {
 
+      console.log(this.props.data);
       return(
          <>
             {
@@ -41,13 +42,27 @@ class ProviderList extends React.Component {
                         value = filteredData.length;
                         max = this.props.data.length;
                      } else if (this.props.active === 'distance') {
-                        value = filteredData.map(x => x.properties.distance)
-                           .reduce((a,b) => a + b);
+                        if (value = filteredData.map(x => x.properties.distance).length === 0) {
+                           value = 0;
+                        } else {
+                           value = filteredData.map(x => x.properties.distance)
+                              .reduce((a,b) => a + b);
+                        }
+
                         max = this.props.data.map(x => x.properties.distance)
                            .reduce((a,b) => a + b);
                      } else if (this.props.active === 'price') {
-                        value = filteredData.map(x => x.properties.cost)
-                           .reduce((a,b) => a + b);
+                        console.log(filteredData)
+                        console.log(
+                           filteredData.map(x => x.properties.cost)
+                        )
+                        if (filteredData.map(x => x.properties.cost).length == 0) {
+                           value = 0;
+                        } else {
+                           value = filteredData.map(x => x.properties.cost)
+                              .reduce((a,b) => a + b);
+                        }
+
                         max = this.props.data.map(x => x.properties.cost)
                            .reduce((a,b) => a + b);
                      }
