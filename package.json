@@ -34,5 +34,8 @@
          "last 1 safari version"
       ]
    },
-   "homepage": "http://dbabbs.github.io/mobility-map"
+   "homepage": "http://dbabbs.github.io/mobility-map",
+   "devDependencies": {
+      "gh-pages": "^2.0.1"
+   }
 }

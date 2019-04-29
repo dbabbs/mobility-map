@@ -147,15 +147,15 @@ class App extends React.Component {
                // transitionActive: true
             })
 
-            if (this.state.curr === 100) {
+            if (this.state.curr === 150) {
                clearInterval(timer)
                this.setState({
                   transitionActive: false
                })
             }
 
-         }, 20)
-      },1000)
+         }, 15)
+      },2000)
 
    }
 
@@ -206,14 +206,13 @@ class App extends React.Component {
       this.setState({
          viewState: {
             zoom: 11,
-            latitude: 47.63844399027284,
-            longitude: -122.33327865600585,
-            bearing: -40,
-            pitch: 160,
-            transitionDuration: 3000,
+            latitude: 47.61931309876645,
+            longitude: -122.38086333961408,
+            bearing: 22,
+            pitch: 40,
+            transitionDuration: 5000,
             transitionEasing: t => t,
             transitionInterpolator,
-            // onTransitionEnd: this.rotateCamera
          }
       });
    }
@@ -248,6 +247,7 @@ class App extends React.Component {
 
    onViewStateChange = ({viewState}) => {
       this.setState({viewState});
+      console.log(viewState);
       if (viewState.zoom > 1) {
          this.setState({zoom: viewState.zoom})
       }
