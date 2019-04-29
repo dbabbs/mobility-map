@@ -1,9 +1,9 @@
 .bottom-bar {
    position: absolute;
-   left: calc(275px + 30px);
-   width: calc(100vw - 275px - 30px - 15px);
+   left: calc(275px + 45px);
+   width: calc(100vw - 275px - 45px - 15px);
    bottom: 15px;
-   height: 110px;
+   /* height: 110px; */
    background: #F9FAF9;
    z-index: 10000;
    border-radius: 2px;
@@ -11,4 +11,16 @@
    box-sizing: border-box;
    display: flex;
    flex-direction: column;
+}
+
+rect.bar {
+   fill: #D6D6D6;
+}
+
+.date-row {
+   margin-top: 0px;
+   display: flex;
+   justify-content: space-between;
+   color: #7D7D7D;
+   font-size: 14px;
 }

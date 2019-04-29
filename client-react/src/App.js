@@ -100,6 +100,16 @@ class App extends React.Component {
 
    componentDidMount = () => {
 
+      const min = Math.min.apply(null,
+         this.state.data.features.map(x => new Date(x.properties.startDate))
+      );
+      const max = Math.max.apply(null,
+         this.state.data.features.map(x => new Date(x.properties.startDate))
+      );
+      this.setState({
+         minDate: min,
+         maxDate: max
+      })
       document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
 
       this.animate();
@@ -323,6 +333,8 @@ class App extends React.Component {
                data={data}
                min={min}
                max={max}
+               currMin={this.state.minDate}
+               currMax={this.state.maxDate}
                filterDate={this.filterDate}
             />
             <DeckGL
