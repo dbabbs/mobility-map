@@ -1,17 +1,38 @@
 {
-  "name": "mobility",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@mapbox/polyline": "^1.0.0",
-    "@turf/turf": "^5.1.6",
-    "node-fetch": "^2.4.0",
-    "papaparse": "^4.6.3"
-  }
+   "name": "client-react",
+   "version": "0.1.0",
+   "private": true,
+   "dependencies": {
+      "d3": "^5.9.2",
+      "deck.gl": "^7.0.3",
+      "rc-slider": "^8.6.9",
+      "react": "^16.8.6",
+      "react-dom": "^16.8.6",
+      "react-map-gl": "^4.1.2",
+      "react-scripts": "3.0.0"
+   },
+   "scripts": {
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject",
+      "predeploy": "npm run build",
+      "deploy": "gh-pages -d build"
+   },
+   "eslintConfig": {
+      "extends": "react-app"
+   },
+   "browserslist": {
+      "production": [
+         ">0.2%",
+         "not dead",
+         "not op_mini all"
+      ],
+      "development": [
+         "last 1 chrome version",
+         "last 1 firefox version",
+         "last 1 safari version"
+      ]
+   },
+   "homepage": "http://dbabbs.github.io/mobility-map"
 }
