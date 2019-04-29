@@ -43,7 +43,7 @@ const transitionInterpolator = new FlyToInterpolator();
 TODO: slick transition between button selectors
 TODO: Design map style
 TODO: add icon attribution
-TODO: camera panning animation
+TODO: Efficient map filtering
 TODO: Add XYZ Space
 TODO: Grid view
 */
@@ -62,28 +62,28 @@ class App extends React.Component {
             {
                name: 'uber',
                color: '#276EF1',
-               color2: [39, 110, 241],
+               color2: [39, 110, 241, 200],
                modes: ['car'],
                active: true
             },
             {
                name: 'jump',
                color: '#E73A14',
-               color2: [231, 58, 20],
+               color2: [231, 58, 20, 200],
                modes: ['bike', 'scooter'],
                active: true
             },
             {
                name: 'lime',
                color: '#25CF00',
-               color2: [37, 207, 0],
+               color2: [37, 207, 0, 200],
                modes: ['bike', 'scooter'],
                active: true
             },
             {
                name: 'lyft',
                color: '#FE00D8',
-               color2: [254, 0, 126],
+               color2: [254, 0, 126, 200],
                modes: ['car'],
                active: true
             },
@@ -247,7 +247,6 @@ class App extends React.Component {
 
    onViewStateChange = ({viewState}) => {
       this.setState({viewState});
-      console.log(viewState);
       if (viewState.zoom > 1) {
          this.setState({zoom: viewState.zoom})
       }
@@ -296,7 +295,7 @@ class App extends React.Component {
          data: this.state.transitionActive ? transitionData : data,
          pickable: true,
          widthScale: 20,
-         widthMinPixels: 2,
+         widthMinPixels: 3,
          getPath: d => this.state.transitionActive ? d.coordinates : d.geometry.coordinates,//.slice(0, this.state.curr),
          getColor: d => {
             let provider = this.state.transitionActive ? d.provider : d.properties.provider;
@@ -366,7 +365,7 @@ class App extends React.Component {
                 </p>
                </Section>
                <Section>
-                  <h2>Toggle Layer</h2>
+                  <h2>Toggle Layer Type</h2>
                   <Selector
                      type="layer"
                      options={['polylines', 'hexbins', 'arcs']}
