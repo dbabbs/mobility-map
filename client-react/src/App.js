@@ -1,8 +1,12 @@
 import React from 'react';
-import {StaticMap} from 'react-map-gl';
+import {StaticMap, FlyToInterpolator } from 'react-map-gl';
 import {GeoJsonLayer, PathLayer, ArcLayer} from '@deck.gl/layers';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
+
+// import LinearInterpolator from '@deck.gl/core';
+
+
 
 import mapStyle from './style.json'
 
@@ -14,16 +18,26 @@ import BottomBar from './Components/BottomBar/BottomBar';
 
 import Sidebar from './Components/Sidebar/Sidebar';
 
+// import {experimental} from 'deck.gl';
 
 import DeckGL from '@deck.gl/react';
 import data from './mobility-data.json';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGJhYmJzIiwiYSI6ImNqN2d2aDBvczFkNmEycWt5OXo0YnY3ejkifQ.h1gKMs1F18_AhB09s91gWg';
-const initialViewState = { longitude: -122.335167, latitude: 47.608013, zoom: 11, pitch: 0, bearing: 0};
+// const initialViewState = { longitude: -122.335167, latitude: 47.608013, zoom: 11, pitch: 60, bearing: -20};
 const sizeLookup = { 1: 500000, 2: 200000, 3: 100000, 4: 50000, 5: 25000, 6: 12500, 7: 6250, 8: 3000,
    9: 1200, 10: 600, 11: 400, 12: 200, 13: 100, 14: 80, 15: 40, 16: 20, 17: 10, 18: 5, 19: 5, 20:5}
 
 
+const initialViewState = {
+   longitude: -122.35021467990396,
+   latitude: 47.623954436942995,
+   zoom: 8,
+   pitch: 60,
+   bearing: -20
+};
+
+const transitionInterpolator = new FlyToInterpolator();
 
 /*
 TODO: slick transition between button selectors
@@ -39,10 +53,11 @@ class App extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
+         viewState: initialViewState,
          data: data,
          trips: [],
          time: 0,
-         curr: data.length - 1, //0,
+         curr: 0, //0,
          providers: [
             {
                name: 'uber',
@@ -112,28 +127,36 @@ class App extends React.Component {
       })
       document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
 
-      this.animate();
    }
    animate() {
 
       //
-      // const data = this.state.data.features
-      //    .filter(x => x.geometry);
-      // const max = Math.max.apply(
-      //    null, data.map(x => x.geometry.coordinates.length)
-      // )
+      const data = this.state.data.features
+         .filter(x => x.geometry);
+      const max = Math.max.apply(
+         null, data.map(x => x.geometry.coordinates.length)
+      )
+      this.setState({
+         transitionActive: true
+      })
+      setTimeout(() => {
+         const timer = setInterval(() => {
 
+            this.setState({
+               curr: this.state.curr + 1,
+               // transitionActive: true
+            })
 
-      // const timer = setInterval(() => {
+            if (this.state.curr === 100) {
+               clearInterval(timer)
+               this.setState({
+                  transitionActive: false
+               })
+            }
 
-      //    this.setState({
-      //       curr: this.state.curr + 1
-      //    })
-      //    if (this.state.curr === max) {
-      //       clearInterval(timer)
-      //    }
-      //
-      // }, 200)
+         }, 20)
+      },1000)
+
    }
 
    renderTooltip = () => {
@@ -177,6 +200,29 @@ class App extends React.Component {
       this.setState({x, y, tooltip: object});
    }
 
+   rotateCamera = () => {
+    // change bearing by 120 degrees.
+    // const bearing = this.state.viewState.bearing + 5;
+      this.setState({
+         viewState: {
+            zoom: 11,
+            latitude: 47.63844399027284,
+            longitude: -122.33327865600585,
+            bearing: -40,
+            pitch: 160,
+            transitionDuration: 3000,
+            transitionEasing: t => t,
+            transitionInterpolator,
+            // onTransitionEnd: this.rotateCamera
+         }
+      });
+   }
+
+   onLoad = () => {
+      this.rotateCamera();
+      this.animate();
+   }
+
    toggleProviders = (p) => {
 
       const providers = this.state.providers.map(x => {
@@ -197,9 +243,15 @@ class App extends React.Component {
          minDate: new Date(evt[0]),
          maxDate: new Date(evt[1])
       })
-      console.log(new Date(evt[0]))
-      console.log(new Date(evt[1]))
+
    }
+
+   onViewStateChange = ({viewState}) => {
+      this.setState({viewState});
+      if (viewState.zoom > 1) {
+         this.setState({zoom: viewState.zoom})
+      }
+  }
 
 
    render() {
@@ -213,6 +265,16 @@ class App extends React.Component {
 
 
       let data = [];
+      let hexd = [];
+
+      const transitionData = this.state.data.features.map(feature => {
+         return {
+            coordinates: feature.geometry.coordinates.slice(0, this.state.curr),
+            provider: feature.properties.provider
+         }
+      })
+
+
 
       for (let i = 0; i < this.state.providers.length; i++) {
          if (this.state.providers[i].active) {
@@ -221,24 +283,23 @@ class App extends React.Component {
             )
          }
       }
-
       data = data.filter(x => new Date(x.properties.startDate) >= this.state.minDate)
          .filter(x => new Date(x.properties.startDate) <= this.state.maxDate)
 
 
+      hexd = data.map(x => x.geometry.coordinates).flat();
 
 
-      const hexd = data.map(x => x.geometry.coordinates).flat();
 
       const pathLayer = new PathLayer({
          id: 'path-layer',
-         data: data,
+         data: this.state.transitionActive ? transitionData : data,
          pickable: true,
          widthScale: 20,
          widthMinPixels: 2,
-         getPath: d => d.geometry.coordinates,//.slice(0, this.state.curr),
+         getPath: d => this.state.transitionActive ? d.coordinates : d.geometry.coordinates,//.slice(0, this.state.curr),
          getColor: d => {
-            const provider = d.properties.provider.charAt(0).toLowerCase() + d.properties.provider.substring(1);
+            let provider = this.state.transitionActive ? d.provider : d.properties.provider;
             return this.state.providers.filter(x => x.name === provider)[0].color2;
          },
          getWidth: d => 1,
@@ -273,7 +334,7 @@ class App extends React.Component {
       if (this.state.activeLayer === 'hexbins') {
          layers.push(hexLayer);
       }
-      if (this.state.activeLayer === 'arcs') {
+      if (this.state.activeLayer === 'arcs' ) {
          layers.push(arcLayer);
       }
 
@@ -339,15 +400,12 @@ class App extends React.Component {
             />
             <DeckGL
                initialViewState={initialViewState}
+               viewState={this.state.viewState}
+               onLoad={this.onLoad}
                controller={true}
                layers={layers}
                minZoom={3}
-               onViewStateChange={(view) => {
-                  if (view.viewState.zoom > 1) {
-                     this.setState({zoom: view.viewState.zoom})
-                  }
-
-               }}
+               onViewStateChange={this.onViewStateChange}
             >
                <StaticMap
                   mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
