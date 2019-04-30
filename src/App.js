@@ -46,7 +46,7 @@ const mapViews = [
    {
       longitude: -122.35021467990396,
       latitude: 47.623954436942995,
-      zoom: 8,
+      zoom: 15, //8
       pitch: 60,
       bearing: -20
    },
@@ -255,7 +255,7 @@ class App extends React.Component {
                })
             }
 
-         }, 15)
+         }, 10)
       },2000)
 
    }
@@ -264,31 +264,30 @@ class App extends React.Component {
       const {x, y, tooltip} = this.state;
 
       if (tooltip) {
+         console.log(tooltip)
+         const color = this.state.providers.filter(x => x.name === tooltip.properties.provider)[0].color
+         console.log(color)
          return tooltip && (
 
             <div
                className="tooltip"
-               style={{left: this.state.x, top: this.state.y, borderTop: `2px solid ${this.state.providers[1].color}`}}
+               style={{left: this.state.x, top: this.state.y, borderTop: `2px solid ${color}`}}
             >
                <div>
                   <span className="key">Provider</span>
-                  <span className="value">Uber</span>
+                  <span className="value">{tooltip.properties.provider.charAt(0).toUpperCase() + tooltip.properties.provider.substring(1)}</span>
                </div>
                <div>
                   <span className="key">Distance</span>
-                  <span className="value">15 miles</span>
+                  <span className="value">{tooltip.properties.distance} miles</span>
                </div>
                <div>
                   <span className="key">Date</span>
-                  <span className="value">August 17th, 2019</span>
+                  <span className="value">{new Date(tooltip.properties.startDate).toLocaleString().split(',')[0]}</span>
                </div>
                <div>
                   <span className="key">Price</span>
-                  <span className="value">$15.04</span>
-               </div>
-               <div>
-                  <span className="key">Mode</span>
-                  <span className="value">Scooter</span>
+                  <span className="value">${tooltip.properties.cost}</span>
                </div>
             </div>
          );
@@ -305,11 +304,10 @@ class App extends React.Component {
       this.setState({
          in: false
       })
-    // change bearing by 120 degrees.
     // const bearing = this.state.viewState.bearing + 5;
       this.setState({
          viewState0: {
-            zoom: 11,
+            zoom: 10,
             latitude: 47.61931309876645,
             longitude: -122.38086333961408,
             bearing: 22,
@@ -418,7 +416,7 @@ class App extends React.Component {
          pickable: true,
          autoHighlight: true,
          highlightColor: [0,0,0],
-         onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
+         onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
       });
 
       const hexLayer = new HexagonLayer({
@@ -436,11 +434,21 @@ class App extends React.Component {
          id: 'arc-layer',
          data: data,
          pickable: true,
+         autoHighlight: true,
+         highlightColor: [0,0,0],
          getWidth: 3,
          getSourcePosition: d => d.properties.startCoordinates,
          getTargetPosition: d => d.properties.endCoordinates,
-         getSourceColor: d => [Math.sqrt(d.inbound), 140, 0],
-         getTargetColor: d => [Math.sqrt(d.outbound), 140, 0],
+         getSourceColor: d => {
+            let provider = d.properties.provider;
+            return this.state.providers.filter(x => x.name === provider)[0].color2;
+         },
+         getTargetColor: d => {
+            let provider = d.properties.provider;
+            return this.state.providers.filter(x => x.name === provider)[0].color2;
+         },
+         onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
+
       });
       const layers = [];
       if (this.state.activeLayer === 'polylines') {
@@ -598,7 +606,18 @@ class App extends React.Component {
                      changeActive={this.changeActive}
                   />
                   <p style={{margin: 0}}>
-                     Switch between individual trip lines and aggregated locations.
+                     {
+                        this.state.activeLayer === 'polylines' &&
+                        'Polyines show expected route of trip.'
+                     }
+                     {
+                        this.state.activeLayer === 'hexbins' &&
+                        'Hexbins show aggregaged travel locations.'
+                     }
+                     {
+                        this.state.activeLayer === 'arcs' &&
+                        'Arcs show origin and destination points.'
+                     }
                   </p>
                </Section>
                <Section
