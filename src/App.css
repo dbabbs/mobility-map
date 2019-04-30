@@ -8,6 +8,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.blur-enter {
+  opacity: 0;
+}
+.blur-enter-active {
+  opacity: 1;
+  transition: opacity 250 ease-in;
+}
+.blur-exit {
+  opacity: 1;
+}
+.blur-exit-active {
+  opacity: 0;
+  transition: opacity 250 ease-in;
+}
+
+.cover {
+   height: 100vh;
+   width: 100vw;
+   z-index: 49999;
+   background: #D6D6D6;
+   /* opacity: 0.75; */
+   position: absolute;
+   transition: 0.5s all;
+
+}
+
 .mapboxgl-ctrl-logo {
     display: none !important;
 }

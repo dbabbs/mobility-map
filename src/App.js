@@ -6,7 +6,10 @@ import './App.css';
 
 import {View, MapView} from '@deck.gl/core';
 
-
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 
 import mapStyle from './style.json'
 
@@ -129,7 +132,7 @@ class App extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
-         per: 0,
+         in: true,
          viewState0: mapViews[0],
          viewState1: mapViews[1],
          viewState2: mapViews[2],
@@ -196,6 +199,14 @@ class App extends React.Component {
             activeView: value
          })
          // this.animate();
+         this.setState({
+            in:true
+         })
+         setTimeout(() => {
+            this.setState({
+               in:false
+            })
+         }, 1000)
       }
 
    }
@@ -290,10 +301,13 @@ class App extends React.Component {
    }
 
    rotateCamera = () => {
+      this.setState({
+         in: false
+      })
     // change bearing by 120 degrees.
     // const bearing = this.state.viewState.bearing + 5;
       this.setState({
-         viewState: {
+         viewState0: {
             zoom: 11,
             latitude: 47.61931309876645,
             longitude: -122.38086333961408,
@@ -307,8 +321,10 @@ class App extends React.Component {
    }
 
    onLoad = () => {
-      // this.rotateCamera();
-      // this.animate();
+
+
+      this.rotateCamera();
+      this.animate();
    }
 
    toggleProviders = (p) => {
@@ -400,7 +416,7 @@ class App extends React.Component {
          getWidth: d => 10,
          pickable: true,
          autoHighlight: true,
-         highlightColor: [255,255,255],
+         highlightColor: [0,0,0],
          onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
       });
 
@@ -453,13 +469,13 @@ class App extends React.Component {
          views = [
             //Row 1
             {
-               id: '0',
+               id: 'top',
                width: size1,
                height: size1,
                controller: true
             },
             {
-               id: '1',
+               id: 'bottom',
                x: size1,
                y: 0,
                width: size1,
@@ -529,12 +545,27 @@ class App extends React.Component {
 
          ]
       }
-
       return (
          <>
             {
                this.renderTooltip()
             }
+
+            <CSSTransition
+               timeout={1000}
+               in={this.state.in}
+               classNames="blur"
+               onEnter={() => console.log('entering..')}
+               unmountOnExit
+               appear
+            >
+
+               <div className="cover"/>
+            </CSSTransition>
+
+
+
+
             <Sidebar>
                <h1>Dylan's Mobility Map</h1>
                <p>An overview of my mobility service trips across cities.</p>
