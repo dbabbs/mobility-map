@@ -213,6 +213,7 @@ class App extends React.Component {
 
    componentDidMount = () => {
 
+
       const min = Math.min.apply(null,
          this.state.data.features.map(x => new Date(x.properties.startDate))
       );
