@@ -50,66 +50,66 @@ const mapViews = [
    //Berlin
    {
       longitude: 13.404954,
-      latitude:  52.520008,
-      zoom: 8,
+      latitude: 52.520008,
+      zoom: 10,
       pitch: 60,
-      bearing: -20
+      bearing: 0
    },
    //SF
    {
       longitude: -122.41251212803706,
       latitude: 37.77116905512072,
       zoom: 8,
-      pitch: 60,
-      bearing: -20
+      pitch: 20,
+      bearing: 0
    },
    //San Diego
    {
       longitude: -117.19453161713136,
       latitude: 32.7459306899641,
       zoom: 8,
-      pitch: 60,
-      bearing: -20
+      pitch: 20,
+      bearing: 0
    },
    //Chicago
    {
       longitude: -87.65142984345374,
       latitude: 41.87225195677442,
-      zoom: 8,
-      pitch: 60,
-      bearing: -20
+      zoom: 10,
+      pitch: 20,
+      bearing: 0
    },
    //San Juan
    {
       longitude: -66.06411721833007,
       latitude: 18.465526764926423,
-      zoom: 8,
-      pitch: 60,
-      bearing: -20
+      zoom: 11,
+      pitch: 20,
+      bearing: 0
    },
    //Detroit
    {
       longitude: -83.03440701349251,
       latitude: 42.34305805549184,
       zoom: 8,
-      pitch: 60,
-      bearing: -20
+      pitch: 20,
+      bearing: 0
    },
    //Instanbul
    {
       longitude: 28.979530,
       latitude: 41.015137,
-      zoom: 8,
-      pitch: 60,
-      bearing: -20
+      zoom: 10,
+      pitch: 20,
+      bearing: 0
    },
    //Amsterdam
    {
       longitude: 4.899431,
       latitude: 52.379189,
-      zoom: 8,
-      pitch: 60,
-      bearing: -20
+      zoom: 10,
+      pitch: 20,
+      bearing: 0
    }
 ]
 
@@ -129,6 +129,7 @@ class App extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
+         per: 0,
          viewState0: mapViews[0],
          viewState1: mapViews[1],
          viewState2: mapViews[2],
@@ -146,6 +147,7 @@ class App extends React.Component {
             {
                name: 'uber',
                color: '#276EF1',
+               // color2: [0,0,0],
                color2: [39, 110, 241, 200],
                modes: ['car'],
                active: true
@@ -180,7 +182,6 @@ class App extends React.Component {
       }
    }
    changeActive = (type, value) => {
-      console.log(type, value)
       if (type === 'metric') {
          this.setState({
             activeMetric: value
@@ -189,6 +190,7 @@ class App extends React.Component {
          this.setState({
             activeLayer: value
          })
+         this.forceUpdate();
       } else if (type === 'view') {
          this.setState({
             activeView: value
@@ -333,23 +335,16 @@ class App extends React.Component {
    }
 
    onViewStateChange = (evt) => {
-      console.log(evt)
+
       const key = 'viewState' + evt.viewId;
-      console.log(key)
       this.setState({
          [key]: evt.viewState
-      }, () => {
-         console.log(
-            this.state[key]
-         )
-      }
-
-      )
+      })
 
       // this.setState({viewState});
-      // if (viewState.zoom > 1) {
-      //    this.setState({zoom: viewState.zoom})
-      // }
+      if (evt.viewState.zoom > 1) {
+         this.setState({zoom: evt.viewState.zoom})
+      }
   }
 
 
@@ -440,17 +435,15 @@ class App extends React.Component {
       if (this.state.activeLayer === 'arcs' ) {
          layers.push(arcLayer);
       }
-
-
-      const numViews = 4;
-
-
+      // console.log(this.state.per + '%')
       let views = [
          {
             id: '0',
             width: '100%',
-            height: '100%'
+            height: '100%',
+            controller: true,
          },
+
       ]
 
       if (this.state.activeView === 'grid') {
@@ -458,7 +451,6 @@ class App extends React.Component {
          const size2 = 2 / 3 * 100 + '%';
          const size3 = '100%';
          views = [
-
             //Row 1
             {
                id: '0',
@@ -612,22 +604,11 @@ class App extends React.Component {
                */
             }
                <DeckGL
-
-
                   onLoad={this.onLoad}
                   layers={layers}
                   minZoom={3}
                   onViewStateChange={this.onViewStateChange}
-
-
                >
-               {
-                  /**
-                  longitude={-122.35021467990396}
-                  latitude={47.623954436942995}
-                  zoom={10}
-                  */
-               }
                {
                   views.map((x,i) => {
                      return (
@@ -645,7 +626,7 @@ class App extends React.Component {
                         >
                            <StaticMap
                               mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-                              mapStyle="mapbox://styles/mapbox/dark-v9"
+
                            />
                         </MapView>
                      )
@@ -662,6 +643,10 @@ class App extends React.Component {
    }
 
 }
+
+/*
+
+*/
 
 /* TODO:
 <div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
