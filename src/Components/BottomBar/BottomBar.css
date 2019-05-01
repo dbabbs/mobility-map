@@ -1,16 +1,16 @@
 .bottom-bar {
    position: absolute;
-   left: calc(275px + 45px);
    width: calc(100vw - 275px - 45px - 15px);
    bottom: 15px;
    /* height: 110px; */
    background: #F9FAF9;
    z-index: 50000;
    border-radius: 2px;
-   padding: 15px;
+   padding: 15px 15px 15px 15px;
    box-sizing: border-box;
    display: flex;
    flex-direction: column;
+   transition: .3s all;
 }
 
 rect.bar {

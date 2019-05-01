@@ -88,7 +88,7 @@ class BottomBar extends React.Component {
       const currMax = new Date(this.props.currMax);
 
       return (
-         <div className="bottom-bar">
+         <div style={{left: this.props.left}} className="bottom-bar">
             <div className="date-row">
                <div>{currMin.toLocaleString().split(',')[0]}</div>
                <div>{currMax.toLocaleString().split(',')[0]}</div>
@@ -99,35 +99,38 @@ class BottomBar extends React.Component {
                max={this.props.max}
 
             / >
-            <Range
-               onChange={this.props.filterDate}
-               min={this.props.min}
-               max={this.props.max}
-               count={2}
-               defaultValue={[this.props.min, this.props.max]}
-               allowCross={false}
-               trackStyle={[{ backgroundColor: '#363636' }]}
-               handleStyle={[{
-                  backgroundColor: 'black',
-                  borderRadius: '0',
-                  border: '0',
-                  width: '8px',
-                  padding: '0'
-               },
-               {
-                  backgroundColor: 'black',
-                  borderRadius: '0',
-                  border: '0',
-                  width: '8px',
-                  padding: '0'
-                }]}
-                activeHandleStyle={[{
-                   background: 'green'
-                }
+            <div style={{marginLeft: '5px'}}>
+               <Range
+                  onChange={this.props.filterDate}
+                  min={this.props.min}
+                  max={this.props.max}
+                  count={2}
+                  defaultValue={[this.props.min, this.props.max]}
+                  allowCross={false}
+                  trackStyle={[{ backgroundColor: '#363636' }]}
+                  handleStyle={[{
+                     backgroundColor: 'black',
+                     borderRadius: '0',
+                     border: '0',
+                     width: '8px',
+                     padding: '0'
+                  },
+                  {
+                     backgroundColor: 'black',
+                     borderRadius: '0',
+                     border: '0',
+                     width: '8px',
+                     padding: '0'
+                  }]}
+                  activeHandleStyle={[{
+                     background: 'green'
+                  }
 
-                ]}
-               railStyle={{ backgroundColor: '#D6D6D6' }}
-            />
+                  ]}
+                  railStyle={{ backgroundColor: '#D6D6D6' }}
+               />
+            </div>
+
 
          </div>
       )

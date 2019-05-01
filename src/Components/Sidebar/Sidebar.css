@@ -13,6 +13,7 @@
    box-sizing: border-box;
    max-height: calc(100vh - 30px);
    overflow: scroll;
+   transition: .3s all;
 }
 
 .provider {

@@ -1,0 +1,21 @@
+.button {
+   border: 1px solid black;
+   border-radius: 3px;
+   box-shadow: 0px 1px 5px #F2F2F2;
+   height: 30px;
+   width: 100%;
+   background: white;
+   display: grid;
+   /* margin: 10px 0; */
+   font-size: 13px;
+   cursor: pointer;
+   transition: .3s all;
+}
+
+.button:hover {
+   background: #F2F2F2;
+}
+
+.button:focus {
+   outline: none;
+}

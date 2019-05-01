@@ -4,6 +4,8 @@ import {GeoJsonLayer, PathLayer, ArcLayer} from '@deck.gl/layers';
 import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
 
+import Button from './Components/Button/Button'
+
 import {View, MapView} from '@deck.gl/core';
 
 import {
@@ -125,6 +127,7 @@ TODO: add icon attribution
 TODO: Efficient map filtering
 TODO: Add XYZ Space
 TODO: Grid view
+TODO: Anonymize data near home
 */
 
 class App extends React.Component {
@@ -132,6 +135,7 @@ class App extends React.Component {
    constructor(props) {
       super(props);
       this.state = {
+         sidebarOpen: true,
          in: true,
          viewState0: mapViews[0],
          viewState1: mapViews[1],
@@ -248,49 +252,74 @@ class App extends React.Component {
                // transitionActive: true
             })
 
-            if (this.state.curr === 150) {
+            if (this.state.curr === 180) {
                clearInterval(timer)
                this.setState({
                   transitionActive: false
                })
             }
 
-         }, 10)
+         }, 3)
       },2000)
 
+   }
+
+   moveSidebar = () => {
+      this.setState({
+         sidebarOpen: !this.state.sidebarOpen
+      })
    }
 
    renderTooltip = () => {
       const {x, y, tooltip} = this.state;
 
       if (tooltip) {
-         console.log(tooltip)
-         const color = this.state.providers.filter(x => x.name === tooltip.properties.provider)[0].color
-         console.log(color)
-         return tooltip && (
 
-            <div
-               className="tooltip"
-               style={{left: this.state.x, top: this.state.y, borderTop: `2px solid ${color}`}}
-            >
-               <div>
-                  <span className="key">Provider</span>
-                  <span className="value">{tooltip.properties.provider.charAt(0).toUpperCase() + tooltip.properties.provider.substring(1)}</span>
+         // console.log(color)
+         console.log(tooltip)
+         console.log(this.state.activeLayer)
+         if (this.state.activeLayer === 'hexbins') {
+            return tooltip && (
+
+               <div
+                  className="tooltip"
+                  style={{left: this.state.x, top: this.state.y, borderTop: `2px solid black`}}
+               >
+                  <div>
+                     <span className="key"># Pickups</span>
+                     <span className="value">{tooltip.points.length}</span>
+                  </div>
                </div>
-               <div>
-                  <span className="key">Distance</span>
-                  <span className="value">{tooltip.properties.distance} miles</span>
+            );
+         } else {
+
+            const color = this.state.providers.filter(x => x.name === tooltip.properties.provider)[0].color
+            return tooltip && (
+
+               <div
+                  className="tooltip"
+                  style={{left: this.state.x, top: this.state.y, borderTop: `2px solid ${color}`}}
+               >
+                  <div>
+                     <span className="key">Provider</span>
+                     <span className="value">{tooltip.properties.provider.charAt(0).toUpperCase() + tooltip.properties.provider.substring(1)}</span>
+                  </div>
+                  <div>
+                     <span className="key">Distance</span>
+                     <span className="value">{tooltip.properties.distance.toFixed(1)} miles</span>
+                  </div>
+                  <div>
+                     <span className="key">Date</span>
+                     <span className="value">{new Date(tooltip.properties.startDate).toLocaleString().split(',')[0]}</span>
+                  </div>
+                  <div>
+                     <span className="key">Price</span>
+                     <span className="value">${tooltip.properties.cost}</span>
+                  </div>
                </div>
-               <div>
-                  <span className="key">Date</span>
-                  <span className="value">{new Date(tooltip.properties.startDate).toLocaleString().split(',')[0]}</span>
-               </div>
-               <div>
-                  <span className="key">Price</span>
-                  <span className="value">${tooltip.properties.cost}</span>
-               </div>
-            </div>
-         );
+            );
+         }
+
       }
       return null;
 
@@ -307,12 +336,12 @@ class App extends React.Component {
     // const bearing = this.state.viewState.bearing + 5;
       this.setState({
          viewState0: {
-            zoom: 10,
+            zoom: 11,
             latitude: 47.61931309876645,
             longitude: -122.38086333961408,
             bearing: 22,
-            pitch: 40,
-            transitionDuration: 5000,
+            pitch: 60,
+            transitionDuration: 6000,
             transitionEasing: t => t,
             transitionInterpolator,
          }
@@ -377,8 +406,10 @@ class App extends React.Component {
       let hexd = [];
 
       const transitionData = this.state.data.features.map(feature => {
+         const coords = feature.geometry.coordinates.slice(1, this.state.curr)
+         // console.log(coords);
          return {
-            coordinates: feature.geometry.coordinates.slice(0, this.state.curr),
+            coordinates: coords,
             provider: feature.properties.provider
          }
       })
@@ -395,9 +426,10 @@ class App extends React.Component {
       data = data.filter(x => new Date(x.properties.startDate) >= this.state.minDate)
          .filter(x => new Date(x.properties.startDate) <= this.state.maxDate)
 
-
-      hexd = data.map(x => x.geometry.coordinates).flat();
-
+      hexd = [
+         ...data.map(x => x.properties.startCoordinates),
+         ...data.map(x => x.properties.endCoordinates)
+      ]
 
 
       const pathLayer = new PathLayer({
@@ -415,7 +447,7 @@ class App extends React.Component {
          getWidth: d => 10,
          pickable: true,
          autoHighlight: true,
-         highlightColor: [0,0,0],
+         highlightColor: [249,226,0],
          onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
       });
 
@@ -423,11 +455,20 @@ class App extends React.Component {
          id: 'hexagon-layer',
          data: hexd,
          pickable: true,
-         extruded: true,
+         // extruded: true,
          radius: sizeLookup[Math.round(this.state.zoom)],
          elevationScale: 4,
          getPosition: d => d,
-         // onHover: ({object, x, y}) => {}
+         colorRange: [
+            [32,62,154],
+            [85,29,173],
+            [192,25,188],
+            [211,19,86],
+            [230,71,10],
+            [249,226,0]
+         ],
+         onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
+
       });
 
       const arcLayer = new ArcLayer({
@@ -435,8 +476,8 @@ class App extends React.Component {
          data: data,
          pickable: true,
          autoHighlight: true,
-         highlightColor: [0,0,0],
-         getWidth: 3,
+         highlightColor: [249,226,0],
+         getWidth: 4,
          getSourcePosition: d => d.properties.startCoordinates,
          getTargetPosition: d => d.properties.endCoordinates,
          getSourceColor: d => {
@@ -453,12 +494,15 @@ class App extends React.Component {
       const layers = [];
       if (this.state.activeLayer === 'polylines') {
          layers.push(pathLayer);
+
+
       }
       if (this.state.activeLayer === 'hexbins') {
          layers.push(hexLayer);
       }
       if (this.state.activeLayer === 'arcs' ) {
          layers.push(arcLayer);
+
       }
       // console.log(this.state.per + '%')
       let views = [
@@ -575,69 +619,85 @@ class App extends React.Component {
 
 
 
-            <Sidebar>
-               <h1>Dylan's Mobility Map</h1>
-               <p>An overview of my mobility service trips across cities.</p>
+            <Sidebar
+               height={this.state.sidebarOpen ? "725px" : "102px"}
+            >
+               <h1>Dylan's Mobility Service Map</h1>
 
-               <Section>
-                  <h2>View Analytics</h2>
-                  <Selector
-                     type="metric"
-                     options={['trips', 'price', 'distance']}
-                     active={this.state.activeMetric}
-                     changeActive={this.changeActive}
-                  />
-                  <ProviderList
-                     handleClick={this.toggleProviders}
-                     providers={this.state.providers}
-                     data={data}
-                     active={this.state.activeMetric}
-                   />
-                <p style={{margin: 0}}>
-                   Filter a particular company by clicking on it.
-                </p>
-               </Section>
-               <Section>
-                  <h2>Toggle Layer Type</h2>
-                  <Selector
-                     type="layer"
-                     options={['polylines', 'hexbins', 'arcs']}
-                     active={this.state.activeLayer}
-                     changeActive={this.changeActive}
-                  />
-                  <p style={{margin: 0}}>
-                     {
-                        this.state.activeLayer === 'polylines' &&
-                        'Polyines show expected route of trip.'
-                     }
-                     {
-                        this.state.activeLayer === 'hexbins' &&
-                        'Hexbins show aggregaged travel locations.'
-                     }
-                     {
-                        this.state.activeLayer === 'arcs' &&
-                        'Arcs show origin and destination points.'
-                     }
-                  </p>
-               </Section>
-               <Section
-                  paddingBottom={0}
-                >
-                  <h2>Toggle Grid View</h2>
-                  <Selector
-                     type="view"
-                     options={['single', 'grid']}
-                     active={this.state.activeView}
-                     changeActive={this.changeActive}
-                  />
-               <p style={{margin: 0}}>
-                     Switch between a single map view and multiple city map views.
-               </p>
-               </Section>
+
+               {
+                  this.state.sidebarOpen &&
+                  <>
+                     <p>A visualization of my mobility service trips.</p>
+                     <Section>
+                        <h2>View Analytics</h2>
+                        <Selector
+                           type="metric"
+                           options={['trips', 'price', 'distance']}
+                           active={this.state.activeMetric}
+                           changeActive={this.changeActive}
+                        />
+                        <ProviderList
+                           handleClick={this.toggleProviders}
+                           providers={this.state.providers}
+                           data={data}
+                           active={this.state.activeMetric}
+                         />
+                         <p style={{margin: 0}}>
+                            Filter a mobility provider by clicking on it.
+                         </p>
+                     </Section>
+                     <Section>
+                        <h2>Toggle Layer Type</h2>
+                        <Selector
+                           type="layer"
+                           options={['polylines', 'hexbins', 'arcs']}
+                           active={this.state.activeLayer}
+                           changeActive={this.changeActive}
+                        />
+                        <p style={{margin: 0}}>
+                           {
+                              this.state.activeLayer === 'polylines' &&
+                              'Polyines - approximate route of trip.'
+                           }
+                           {
+                              this.state.activeLayer === 'hexbins' &&
+                              'Hexbins - aggregated pickups & dropoffs.'
+                           }
+                           {
+                              this.state.activeLayer === 'arcs' &&
+                              'Arcs - pickup and dropoff points.'
+                           }
+                        </p>
+                     </Section>
+                     <Section
+                        paddingBottom={0}
+                      >
+                        <h2>Toggle Grid View</h2>
+                        <Selector
+                           type="view"
+                           options={['single', 'grid']}
+                           active={this.state.activeView}
+                           changeActive={this.changeActive}
+                        />
+                     <p style={{margin: 0}}>
+                           Switch between a single map view and multiple city map views.
+                     </p>
+                     </Section>
+                  </>
+               }
+
+               <Button
+                  text={this.state.sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+                  handleClick={this.moveSidebar}
+               />
+
+
             </Sidebar>
             {
 
                <BottomBar
+                  left={this.state.sidebarOpen ? "calc(275px + 45px)" : "100vw"}
                   data={data}
                   min={min}
                   max={max}

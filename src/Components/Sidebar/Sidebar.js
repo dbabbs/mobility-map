@@ -13,7 +13,7 @@ class Sidebar extends React.Component {
 
    render() {
       return(
-         <div className="sidebar">
+         <div style={{height: this.props.height}} className="sidebar">
             {this.props.children}
          </div>
       )
