@@ -14,13 +14,13 @@ import {
   TransitionGroup,
 } from 'react-transition-group';
 
-// import mapStyle from './style.json'
 
 
 import Selector from './Components/Selector/Selector';
 import Section from './Components/SidebarSection/Section'
 import ProviderList from './Components/ProviderList/ProviderList';
 import BottomBar from './Components/BottomBar/BottomBar';
+import GridLabels from './Components/GridLabels/GridLabels';
 
 import Sidebar from './Components/Sidebar/Sidebar';
 
@@ -51,71 +51,72 @@ const mapViews = [
       latitude: 47.623954436942995,
       zoom: 15, //8
       pitch: 60,
-      bearing: -20
+      bearing: -20,
+      name: 'Seattle, WA'
    },
-   //Berlin
    {
       longitude: 13.404954,
       latitude: 52.520008,
       zoom: 10,
       pitch: 60,
-      bearing: 0
+      bearing: 0,
+      name: 'Berlin, Germany'
    },
-   //SF
    {
       longitude: -122.41251212803706,
       latitude: 37.77116905512072,
       zoom: 8,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'San Francisco, CA'
    },
-   //San Diego
    {
       longitude: -117.19453161713136,
       latitude: 32.7459306899641,
       zoom: 8,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'San Diego, CA'
    },
-   //Chicago
    {
       longitude: -87.65142984345374,
       latitude: 41.87225195677442,
       zoom: 10,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'Chicago, IL'
    },
-   //San Juan
    {
       longitude: -66.06411721833007,
       latitude: 18.465526764926423,
       zoom: 11,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'San Juan, PR'
    },
-   //Detroit
    {
       longitude: -83.03440701349251,
       latitude: 42.34305805549184,
       zoom: 8,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'Detroit, MI'
    },
-   //Instanbul
    {
       longitude: 28.979530,
       latitude: 41.015137,
       zoom: 10,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'Istanbul, Turkey'
    },
-   //Amsterdam
    {
       longitude: 4.899431,
       latitude: 52.379189,
       zoom: 10,
       pitch: 20,
-      bearing: 0
+      bearing: 0,
+      name: 'Amsterdam, Netherlands'
    }
 ]
 
@@ -605,6 +606,7 @@ class App extends React.Component {
                this.renderTooltip()
             }
 
+
             <CSSTransition
                timeout={1000}
                in={this.state.in}
@@ -617,11 +619,23 @@ class App extends React.Component {
                <div className="cover"/>
             </CSSTransition>
 
+            <CSSTransition
+               timeout={1000}
+               in={this.state.activeView === 'grid'}
+               classNames="blur-grid"
+               onEnter={() => console.log('entering..')}
+               unmountOnExit
+               appear
+            >
+
+               <GridLabels labels={mapViews}/>
+            </CSSTransition>
+
 
 
 
             <Sidebar
-               height={this.state.sidebarOpen ? "725px" : "102px"}
+               height={this.state.sidebarOpen ? "710px" : "102px"}
             >
                <h1>Dylan's Mobility Service Map</h1>
 

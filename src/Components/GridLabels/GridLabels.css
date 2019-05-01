@@ -1,0 +1,20 @@
+.grid-grid {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+   grid-template-rows: 1fr 1fr 1fr;
+   position: absolute;
+   z-index: 4999;
+   position: absolute;
+   width: 100vw;
+   height: 100vh;
+   pointer-events: none;
+}
+
+.label {
+   background: #F9FAF9;
+   padding: 5px 8px;
+   display: inline;
+   color: #7d7d7d;
+   font-size: 14px;
+   border-bottom-right-radius: 2px;
+}

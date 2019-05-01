@@ -339,11 +339,8 @@
          "layout": {},
          "paint": {
             "fill-extrusion-color": "#CECECE",
-            "fill-extrusion-opacity": 0.9,
-            "fill-extrusion-height": [
-               "get",
-               "height"
-            ]
+            "fill-extrusion-opacity": 0.9
+
          }
       }
 

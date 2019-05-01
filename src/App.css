@@ -23,6 +23,21 @@ body {
   transition: opacity 250 ease-in;
 }
 
+.blur-grid-enter {
+  opacity: 0;
+}
+.blur-grid-enter-active {
+  opacity: 1;
+  transition: opacity 1000 ease-in;
+}
+.blur-grid-exit {
+  opacity: 1;
+}
+.blur-grid-exit-active {
+  opacity: 0;
+  transition: opacity 1000 ease-in;
+}
+
 .cover {
    height: 100vh;
    width: 100vw;
