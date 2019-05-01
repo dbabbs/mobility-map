@@ -681,7 +681,7 @@ class App extends React.Component {
                            changeActive={this.changeActive}
                         />
                      <p style={{margin: 0}}>
-                           Switch between a single map view and multiple city map views.
+                           Single city or multi city view.
                      </p>
                      </Section>
                   </>
