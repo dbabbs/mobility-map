@@ -7,6 +7,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.attribution {
+   color: #7D7D7D;
+   font-size: 9px;
+   right:15px;
+   bottom: 2px;
+   z-index: 500000;
+   position: absolute;
+}
+.attribution a {
+   color: inherit;
+   text-decoration: none;
+}
 
 .blur-enter {
   opacity: 0;

@@ -606,7 +606,9 @@ class App extends React.Component {
                this.renderTooltip()
             }
 
-
+            <div className="attribution">
+               © <a href="https://here.com">HERE</a> 2019. <a href="https://here.xyz">HERE XYZ</a>. Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+            </div>
             <CSSTransition
                timeout={1000}
                in={this.state.in}
@@ -776,7 +778,7 @@ class App extends React.Component {
 */
 
 /* TODO:
-<div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
 */
 
 export default App;
