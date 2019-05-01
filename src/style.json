@@ -1,6 +1,6 @@
 {
    "version": 8,
-   "name": "Dylan Dark",
+   "name": "Dylan's Mobility Map",
    "metadata": {},
    "sources": {
       "berlin": {
@@ -10,11 +10,12 @@
          ]
       }
    },
+   "glyphs": "https://free.tilehosting.com/fonts/{fontstack}/{range}.pbf?key=Dsa0rAKgsxdRRnxDnm6b",
    "layers": [{
          "id": "background",
          "type": "background",
          "paint": {
-            "background-color": "white"
+            "background-color": "#EDEDED"
          }
       },
       {
@@ -23,7 +24,7 @@
          "source": "berlin",
          "source-layer": "earth",
          "paint": {
-            "fill-color": "white"
+            "fill-color": "#EDEDED"
          }
       },
       {
@@ -32,7 +33,7 @@
          "source": "berlin",
          "source-layer": "landuse",
          "paint": {
-            "fill-color": "#E9EEF1"
+            "fill-color": "#E4E4E4"
          }
       },
       {
@@ -41,7 +42,7 @@
          "source": "berlin",
          "source-layer": "water",
          "paint": {
-            "fill-color": "#C3CDD4"
+            "fill-color": "#DBDBDB"
          }
       },
       {
@@ -69,7 +70,7 @@
             ]
          ],
          "paint": {
-            "line-color": "#EEEEEE",
+            "line-color": "#ffffff",
             "line-width": [
                "interpolate",
                [
@@ -84,7 +85,268 @@
                14
             ]
          }
+      },
+      {
+         "id": "minor-road",
+         "type": "line",
+         "source": "berlin",
+         "source-layer": "roads",
+         "filter": [
+            "all",
+            [
+               "!=",
+               "kind",
+               "rail"
+            ],
+            [
+               "==",
+               "kind",
+               "minor_road"
+            ],
+            [
+               "in",
+               "kind_detail",
+               "unclassified",
+               "residential",
+               "service"
+            ]
+         ],
+         "paint": {
+            "line-color": "white",
+            "line-width": [
+               "interpolate",
+               [
+                  "linear"
+               ],
+               [
+                  "zoom"
+               ],
+               12,
+               1,
+               14,
+               1.5,
+               17,
+               10
+            ]
+         }
+      },
+      {
+         "id": "major-road",
+         "type": "line",
+         "source": "berlin",
+         "source-layer": "roads",
+         "filter": [
+            "all",
+            [
+               "!=",
+               "kind",
+               "rail"
+            ],
+            [
+               "==",
+               "kind",
+               "major_road"
+            ]
+
+         ],
+         "paint": {
+            "line-color": "white",
+            "line-width": [
+               "interpolate",
+               [
+                  "linear"
+               ],
+               [
+                  "zoom"
+               ],
+               8,
+               2,
+               14,
+               3
+            ]
+         }
+      },
+      {
+         "id": "primary-label",
+         "type": "symbol",
+         "source": "berlin",
+         "source-layer": "roads",
+         "filter": [
+            "all",
+            [
+               "!=",
+               "kind",
+               "rail"
+            ],
+            [
+               "==",
+               "kind",
+               "highway"
+            ],
+            [
+               "in",
+               "kind_detail",
+               "motorway",
+               "primary"
+            ]
+         ],
+         "layout": {
+            "symbol-placement": "line",
+            "text-field": "{name}"
+         },
+         "paint": {
+            "text-color": "#9D9D9D",
+            "text-halo-color": "white",
+            "text-halo-width": 1
+         }
+      },
+      {
+         "id": "secondary-label",
+         "type": "symbol",
+         "source": "berlin",
+         "source-layer": "roads",
+         "filter": [
+            "all",
+            [
+               "!=",
+               "kind",
+               "rail"
+            ],
+            [
+               "==",
+               "kind",
+               "major_road"
+            ]
+
+         ],
+         "layout": {
+            "symbol-placement": "line",
+            "text-field": "{name}"
+         },
+         "paint": {
+            "text-color": "#9D9D9D",
+            "text-halo-color": "white",
+            "text-halo-width": 1
+         }
+      },
+      {
+         "id": "region-label",
+         "type": "symbol",
+         "source": "berlin",
+         "source-layer": "places",
+         "filter": [
+            "all",
+            [
+               "in",
+               "kind",
+               "region"
+            ]
+         ],
+         "layout": {
+            "text-field": "{name}",
+            "text-size": {
+               "stops": [
+                  [
+                     5,
+                     12.8
+                  ],
+                  [
+                     6,
+                     14.4
+                  ]
+               ]
+            }
+         },
+         "paint": {
+            "text-halo-color": "white",
+            "text-halo-width": 1,
+            "text-color": "#686868"
+         }
+      },
+
+      {
+         "id": "locality-label-300k",
+         "type": "symbol",
+         "source": "berlin",
+         "source-layer": "places",
+         "filter": [
+            "all",
+            [
+               "==",
+               "kind",
+               "locality"
+            ],
+            [
+               "has",
+               "population"
+            ],
+            [
+               ">",
+               "population",
+               300000
+            ]
+         ],
+         "layout": {
+            "text-field": "{name}",
+            "text-size": {
+               "stops": [
+                  [
+                     4,
+                     11.2
+                  ],
+                  [
+                     5,
+                     12.8
+                  ],
+                  [
+                     6,
+                     16
+                  ],
+                  [
+                     7,
+                     19.2
+                  ],
+                  [
+                     8,
+                     22
+                  ],
+                  [
+                     9,
+                     20
+                  ],
+                  [
+                     10,
+                     20
+                  ],
+                  [
+                     11,
+                     20
+                  ]
+               ]
+            }
+         },
+         "paint": {
+            "text-halo-color": "white",
+            "text-halo-width": 1,
+            "text-color": "#686868"
+         }
+      },
+      {
+         "id": "building_level15",
+         "type": "fill-extrusion",
+         "source": "berlin",
+         "source-layer": "buildings",
+         "layout": {},
+         "paint": {
+            "fill-extrusion-color": "#CECECE",
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-height": [
+               "get",
+               "height"
+            ]
+         }
       }
+
    ],
-   "id": "berlin"
+   "id": "mobility"
 }

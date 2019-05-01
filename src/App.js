@@ -5,6 +5,7 @@ import {HexagonLayer} from '@deck.gl/aggregation-layers';
 import './App.css';
 
 import Button from './Components/Button/Button'
+import mapStyle from './style.json'
 
 import {View, MapView} from '@deck.gl/core';
 
@@ -13,7 +14,7 @@ import {
   TransitionGroup,
 } from 'react-transition-group';
 
-import mapStyle from './style.json'
+// import mapStyle from './style.json'
 
 
 import Selector from './Components/Selector/Selector';
@@ -737,6 +738,7 @@ class App extends React.Component {
                         >
                            <StaticMap
                               mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+                              mapStyle={mapStyle}
 
                            />
                         </MapView>
