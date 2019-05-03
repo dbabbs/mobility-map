@@ -21,19 +21,11 @@ import BottomBar from './Components/BottomBar/BottomBar';
 import GridLabels from './Components/GridLabels/GridLabels';
 import Sidebar from './Components/Sidebar/Sidebar';
 
-// import data from './mobility-data.json';
-
+//Other
 import getGridView from './views';
-import {sizeLookup, mapViews, providers} from './config';
+import {sizeLookup, mapViews, providers, months} from './config';
 
 const transitionInterpolator = new FlyToInterpolator();
-
-/*
-TODO: slick transition between button selectors
-TODO: Efficient map filtering
-TODO: Add XYZ Space
-TODO: Anonymize data near home
-*/
 
 class App extends React.Component {
 
@@ -58,7 +50,7 @@ class App extends React.Component {
          activeMetric: 'trips',
          activeLayer: 'polylines',
          activeView: 'single',
-         minDate: new Date('08/07/1995'),
+         minDate: new Date('08/07/1995'), //Happy birthday to me
          maxDate: new Date()
       }
    }
@@ -87,7 +79,8 @@ class App extends React.Component {
    }
 
    componentDidMount = async () => {
-      console.log('readning')
+      console.log('loading data...')
+      console.log('Thanks for taking a look under the hood. Questions? dylan.babbs@gmail.com')
       document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
 
       const url = `https://xyz.api.here.com/hub/spaces/2vDrakce/search?limit=5000&clientId=cli&access_token=AJXABoLRYHN488wIHnxheik`;
@@ -121,14 +114,13 @@ class App extends React.Component {
             this.setState({
                curr: this.state.curr + 1,
             })
-            if (this.state.curr === 180) {
+            if (this.state.curr === 180) { //180
                clearInterval(timer)
                this.setState({
                   transitionActive: false
                })
             }
-
-         }, 3)
+         }, 3) //3
       },2000)
    }
 
@@ -149,7 +141,7 @@ class App extends React.Component {
                   style={{left: this.state.x, top: this.state.y, borderTop: `2px solid black`}}
                >
                   <div>
-                     <span className="key"># Pickups</span>
+                     <span className="key"># Pickups & Dropoffs</span>
                      <span className="value">{tooltip.points.length}</span>
                   </div>
                </div>
@@ -171,7 +163,7 @@ class App extends React.Component {
                   </div>
                   <div>
                      <span className="key">Date</span>
-                     <span className="value">{new Date(tooltip.properties.startDate).toLocaleString().split(',')[0]}</span>
+                     <span className="value">{months[new Date(tooltip.properties.startDate).getMonth()] + ' ' + new Date(tooltip.properties.startDate).getFullYear()}</span>
                   </div>
                   <div>
                      <span className="key">Price</span>
@@ -186,7 +178,13 @@ class App extends React.Component {
    }
 
    setTooltip = (x, y, object) => {
-      this.setState({x, y, tooltip: object});
+      if (object !== null) {
+         this.setState({x, y, tooltip: object});
+         setTimeout(() => {
+            this.setState({tooltip: null});
+         }, 1500)
+      }
+      // this.setState({x, y, tooltip: object});
    }
 
    rotateCamera = () => {
@@ -249,11 +247,9 @@ class App extends React.Component {
       let min = new Date();
       let max = new Date();
 
-
       let transitionData = [];
-      if (this.state.data.length === 0) {
 
-      } else {
+      if (this.state.data.length > 0) {
          min =  Math.min.apply(null, this.state.data.map(x => new Date(x.properties.startDate)));
          max = Math.max.apply(null, this.state.data.map(x => new Date(x.properties.startDate)));
 
@@ -283,12 +279,6 @@ class App extends React.Component {
          ]
       }
 
-
-
-
-
-
-
       const pathLayer = new PathLayer({
          id: 'path-layer',
          data: this.state.transitionActive ? transitionData : data,
@@ -304,7 +294,9 @@ class App extends React.Component {
          pickable: true,
          autoHighlight: true,
          highlightColor: [249,226,0],
-         onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
+         onHover: (z) => {
+            !this.state.transitionActive && this.setTooltip(z.x, z.y, z.object ? z.object : null)
+         }
       });
 
       const hexLayer = new HexagonLayer({
@@ -371,6 +363,7 @@ class App extends React.Component {
             }]
       }
       return (
+
          <>
             {
                this.renderTooltip()
@@ -393,7 +386,6 @@ class App extends React.Component {
                timeout={1000}
                in={this.state.activeView === 'grid'}
                classNames="blur-grid"
-               onEnter={() => console.log('entering..')}
                unmountOnExit
                appear
             >
@@ -412,7 +404,7 @@ class App extends React.Component {
                {
                   this.state.sidebarOpen &&
                   <>
-                     <p>A visualization of my mobility service trips.</p>
+                     <p>A visualization of my mobility service trips. Made by <a href="https://twitter.com/dbabbs">@dbabbs</a></p>
                      <Section>
                         <h2>View Analytics</h2>
                         <Selector
@@ -464,9 +456,6 @@ class App extends React.Component {
                            active={this.state.activeView}
                            changeActive={this.changeActive}
                         />
-                     <p style={{margin: 0}}>
-                           Single city or multi city view.
-                     </p>
                      </Section>
                   </>
                }
@@ -530,21 +519,11 @@ class App extends React.Component {
 
 
                </DeckGL>
-
-
-
          </>
       );
    }
 
 }
 
-/*
-
-*/
-
-/* TODO:
-
-*/
 
 export default App;
