@@ -295,7 +295,7 @@ class App extends React.Component {
          autoHighlight: true,
          highlightColor: [249,226,0],
          onHover: (z) => {
-            !this.state.transitionActive && this.setTooltip(z.x, z.y, z.object ? z.object : null)
+            // !this.state.transitionActive && this.setTooltip(z.x, z.y, z.object ? z.object : null)
          }
       });
 
@@ -314,7 +314,7 @@ class App extends React.Component {
             [230,71,10],
             [249,226,0]
          ],
-         onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
+         // onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
       });
 
       const arcLayer = new ArcLayer({
@@ -334,7 +334,7 @@ class App extends React.Component {
             let provider = d.properties.provider;
             return this.state.providers.filter(x => x.name === provider)[0].color2;
          },
-         onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
+         // onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
 
       });
 
