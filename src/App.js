@@ -1,134 +1,37 @@
 import React from 'react';
-import {StaticMap, FlyToInterpolator } from 'react-map-gl';
-import {GeoJsonLayer, PathLayer, ArcLayer} from '@deck.gl/layers';
-import {HexagonLayer} from '@deck.gl/aggregation-layers';
-import './App.css';
 
+//DeckGL
+import DeckGL from '@deck.gl/react';
+import {StaticMap, FlyToInterpolator } from 'react-map-gl';
+import {PathLayer, ArcLayer} from '@deck.gl/layers';
+import {HexagonLayer} from '@deck.gl/aggregation-layers';
+import {MapView} from '@deck.gl/core';
+
+//CSS
+import './App.css';
+import {CSSTransition} from 'react-transition-group';
+
+//Components
 import Button from './Components/Button/Button'
 import mapStyle from './style.json'
-
-import {View, MapView} from '@deck.gl/core';
-
-import {
-  CSSTransition,
-  TransitionGroup,
-} from 'react-transition-group';
-
-
-
 import Selector from './Components/Selector/Selector';
 import Section from './Components/SidebarSection/Section'
 import ProviderList from './Components/ProviderList/ProviderList';
 import BottomBar from './Components/BottomBar/BottomBar';
 import GridLabels from './Components/GridLabels/GridLabels';
-
 import Sidebar from './Components/Sidebar/Sidebar';
 
-// import {experimental} from 'deck.gl';
+// import data from './mobility-data.json';
 
-import DeckGL from '@deck.gl/react';
-
-// import {MapView} from '@deck.gl/core';
-import data from './mobility-data.json';
-
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGJhYmJzIiwiYSI6ImNqN2d2aDBvczFkNmEycWt5OXo0YnY3ejkifQ.h1gKMs1F18_AhB09s91gWg';
-// const initialViewState = { longitude: -122.335167, latitude: 47.608013, zoom: 11, pitch: 60, bearing: -20};
-const sizeLookup = { 1: 500000, 2: 200000, 3: 100000, 4: 50000, 5: 25000, 6: 12500, 7: 6250, 8: 3000,
-   9: 1200, 10: 600, 11: 400, 12: 200, 13: 100, 14: 80, 15: 40, 16: 20, 17: 10, 18: 5, 19: 5, 20:5}
-
-
-const initialViewState = {
-   longitude: -122.35021467990396,
-   latitude: 47.623954436942995,
-   zoom: 8,
-   pitch: 60,
-   bearing: -20
-};
-
-const mapViews = [
-   {
-      longitude: -122.35021467990396,
-      latitude: 47.623954436942995,
-      zoom: 15, //8
-      pitch: 60,
-      bearing: -20,
-      name: 'Seattle, WA'
-   },
-   {
-      longitude: 13.404954,
-      latitude: 52.520008,
-      zoom: 10,
-      pitch: 60,
-      bearing: 0,
-      name: 'Berlin, Germany'
-   },
-   {
-      longitude: -122.41251212803706,
-      latitude: 37.77116905512072,
-      zoom: 8,
-      pitch: 20,
-      bearing: 0,
-      name: 'San Francisco, CA'
-   },
-   {
-      longitude: -117.19453161713136,
-      latitude: 32.7459306899641,
-      zoom: 8,
-      pitch: 20,
-      bearing: 0,
-      name: 'San Diego, CA'
-   },
-   {
-      longitude: -87.65142984345374,
-      latitude: 41.87225195677442,
-      zoom: 10,
-      pitch: 20,
-      bearing: 0,
-      name: 'Chicago, IL'
-   },
-   {
-      longitude: -66.06411721833007,
-      latitude: 18.465526764926423,
-      zoom: 11,
-      pitch: 20,
-      bearing: 0,
-      name: 'San Juan, PR'
-   },
-   {
-      longitude: -83.03440701349251,
-      latitude: 42.34305805549184,
-      zoom: 8,
-      pitch: 20,
-      bearing: 0,
-      name: 'Detroit, MI'
-   },
-   {
-      longitude: 28.979530,
-      latitude: 41.015137,
-      zoom: 10,
-      pitch: 20,
-      bearing: 0,
-      name: 'Istanbul, Turkey'
-   },
-   {
-      longitude: 4.899431,
-      latitude: 52.379189,
-      zoom: 10,
-      pitch: 20,
-      bearing: 0,
-      name: 'Amsterdam, Netherlands'
-   }
-]
+import getGridView from './views';
+import {sizeLookup, mapViews, providers} from './config';
 
 const transitionInterpolator = new FlyToInterpolator();
 
 /*
 TODO: slick transition between button selectors
-TODO: Design map style
-TODO: add icon attribution
 TODO: Efficient map filtering
 TODO: Add XYZ Space
-TODO: Grid view
 TODO: Anonymize data near home
 */
 
@@ -139,6 +42,7 @@ class App extends React.Component {
       this.state = {
          sidebarOpen: true,
          in: true,
+         loaded: false,
          viewState0: mapViews[0],
          viewState1: mapViews[1],
          viewState2: mapViews[2],
@@ -148,41 +52,9 @@ class App extends React.Component {
          viewState6: mapViews[6],
          viewState7: mapViews[7],
          viewState8: mapViews[8],
-         data: data,
-         trips: [],
-         time: 0,
-         curr: 0, //0,
-         providers: [
-            {
-               name: 'uber',
-               color: '#276EF1',
-               // color2: [0,0,0],
-               color2: [39, 110, 241, 200],
-               modes: ['car'],
-               active: true
-            },
-            {
-               name: 'jump',
-               color: '#E73A14',
-               color2: [231, 58, 20, 200],
-               modes: ['bike', 'scooter'],
-               active: true
-            },
-            {
-               name: 'lime',
-               color: '#25CF00',
-               color2: [37, 207, 0, 200],
-               modes: ['bike', 'scooter'],
-               active: true
-            },
-            {
-               name: 'lyft',
-               color: '#FE00D8',
-               color2: [254, 0, 126, 200],
-               modes: ['car'],
-               active: true
-            },
-         ],
+         data: [],
+         curr: 0,
+         providers: providers,
          activeMetric: 'trips',
          activeLayer: 'polylines',
          activeView: 'single',
@@ -190,6 +62,7 @@ class App extends React.Component {
          maxDate: new Date()
       }
    }
+
    changeActive = (type, value) => {
       if (type === 'metric') {
          this.setState({
@@ -202,10 +75,7 @@ class App extends React.Component {
          this.forceUpdate();
       } else if (type === 'view') {
          this.setState({
-            activeView: value
-         })
-         // this.animate();
-         this.setState({
+            activeView: value,
             in:true
          })
          setTimeout(() => {
@@ -214,46 +84,43 @@ class App extends React.Component {
             })
          }, 1000)
       }
-
    }
 
-   componentDidMount = () => {
+   componentDidMount = async () => {
+      console.log('readning')
+      document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
 
+      const url = `https://xyz.api.here.com/hub/spaces/2vDrakce/search?limit=5000&clientId=cli&access_token=AJXABoLRYHN488wIHnxheik`;
+      const data = await (await fetch(url) ).json();
+      this.setState({
+         data: data.features,
+         loaded: true
+      });
 
       const min = Math.min.apply(null,
-         this.state.data.features.map(x => new Date(x.properties.startDate))
+         this.state.data.map(x => new Date(x.properties.startDate))
       );
       const max = Math.max.apply(null,
-         this.state.data.features.map(x => new Date(x.properties.startDate))
+         this.state.data.map(x => new Date(x.properties.startDate))
       );
       this.setState({
          minDate: min,
          maxDate: max
       })
-      document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
+
 
    }
-   animate() {
 
-      //
-      console.log('aniamting')
-      const data = this.state.data.features
-         .filter(x => x.geometry);
-      const max = Math.max.apply(
-         null, data.map(x => x.geometry.coordinates.length)
-      )
+   animate = () => {
       this.setState({
          transitionActive: true,
          curr: 0
       })
       setTimeout(() => {
          const timer = setInterval(() => {
-
             this.setState({
                curr: this.state.curr + 1,
-               // transitionActive: true
             })
-
             if (this.state.curr === 180) {
                clearInterval(timer)
                this.setState({
@@ -263,7 +130,6 @@ class App extends React.Component {
 
          }, 3)
       },2000)
-
    }
 
    moveSidebar = () => {
@@ -273,16 +139,11 @@ class App extends React.Component {
    }
 
    renderTooltip = () => {
-      const {x, y, tooltip} = this.state;
+      const {tooltip} = this.state;
 
       if (tooltip) {
-
-         // console.log(color)
-         console.log(tooltip)
-         console.log(this.state.activeLayer)
          if (this.state.activeLayer === 'hexbins') {
             return tooltip && (
-
                <div
                   className="tooltip"
                   style={{left: this.state.x, top: this.state.y, borderTop: `2px solid black`}}
@@ -294,10 +155,8 @@ class App extends React.Component {
                </div>
             );
          } else {
-
             const color = this.state.providers.filter(x => x.name === tooltip.properties.provider)[0].color
             return tooltip && (
-
                <div
                   className="tooltip"
                   style={{left: this.state.x, top: this.state.y, borderTop: `2px solid ${color}`}}
@@ -321,13 +180,12 @@ class App extends React.Component {
                </div>
             );
          }
-
       }
       return null;
 
    }
 
-   setTooltip(x, y, object) {
+   setTooltip = (x, y, object) => {
       this.setState({x, y, tooltip: object});
    }
 
@@ -335,7 +193,6 @@ class App extends React.Component {
       this.setState({
          in: false
       })
-    // const bearing = this.state.viewState.bearing + 5;
       this.setState({
          viewState0: {
             zoom: 11,
@@ -351,93 +208,90 @@ class App extends React.Component {
    }
 
    onLoad = () => {
-
-
       this.rotateCamera();
       this.animate();
    }
 
    toggleProviders = (p) => {
-
       const providers = this.state.providers.map(x => {
          if (x.name === p) {
             x.active = !x.active;
          }
          return x;
       })
-
-
       this.setState({
          providers: providers
       })
    }
 
-   filterDate = evt => {
+   filterDate = (evt) => {
       this.setState({
          minDate: new Date(evt[0]),
          maxDate: new Date(evt[1])
       })
-
    }
 
    onViewStateChange = (evt) => {
-
       const key = 'viewState' + evt.viewId;
       this.setState({
          [key]: evt.viewState
       })
-
-      // this.setState({viewState});
       if (evt.viewState.zoom > 1) {
          this.setState({zoom: evt.viewState.zoom})
       }
   }
 
-
-   render() {
-
-      const min = Math.min.apply(null,
-         this.state.data.features.map(x => new Date(x.properties.startDate))
-      );
-      const max = Math.max.apply(null,
-         this.state.data.features.map(x => new Date(x.properties.startDate))
-      );
-
+   render = () => {
 
       let data = [];
       let hexd = [];
 
-      const transitionData = this.state.data.features.map(feature => {
-         const coords = feature.geometry.coordinates.slice(1, this.state.curr)
-         // console.log(coords);
-         return {
-            coordinates: coords,
-            provider: feature.properties.provider
+      let min = new Date();
+      let max = new Date();
+
+
+      let transitionData = [];
+      if (this.state.data.length === 0) {
+
+      } else {
+         min =  Math.min.apply(null, this.state.data.map(x => new Date(x.properties.startDate)));
+         max = Math.max.apply(null, this.state.data.map(x => new Date(x.properties.startDate)));
+
+
+         transitionData = this.state.data.length === 0 ? [] : this.state.data.map(feature => {
+            const coords = feature.geometry.coordinates.slice(1, this.state.curr);
+            return {
+               coordinates: coords,
+               provider: feature.properties.provider
+            }
+         })
+
+         for (let i = 0; i < this.state.providers.length; i++) {
+            if (this.state.providers[i].active) {
+               data.push(
+                  ...this.state.data.filter(x => x.properties.provider === this.state.providers[i].name)
+               );
+            }
          }
-      })
 
+         data = data.filter(x => new Date(x.properties.startDate) >= this.state.minDate)
+            .filter(x => new Date(x.properties.startDate) <= this.state.maxDate)
 
-
-      for (let i = 0; i < this.state.providers.length; i++) {
-         if (this.state.providers[i].active) {
-            data.push(
-               ...this.state.data.features.filter(x => x.properties.provider === this.state.providers[i].name)
-            )
-         }
+         hexd = [
+            ...data.map(x => x.properties.startCoordinates),
+            ...data.map(x => x.properties.endCoordinates)
+         ]
       }
-      data = data.filter(x => new Date(x.properties.startDate) >= this.state.minDate)
-         .filter(x => new Date(x.properties.startDate) <= this.state.maxDate)
 
-      hexd = [
-         ...data.map(x => x.properties.startCoordinates),
-         ...data.map(x => x.properties.endCoordinates)
-      ]
+
+
+
+
 
 
       const pathLayer = new PathLayer({
          id: 'path-layer',
          data: this.state.transitionActive ? transitionData : data,
-
          widthScale: 3,
          widthMinPixels: 3,
          getPath: d => this.state.transitionActive ? d.coordinates : d.geometry.coordinates,//.slice(0, this.state.curr),
@@ -457,7 +311,6 @@ class App extends React.Component {
          id: 'hexagon-layer',
          data: hexd,
          pickable: true,
-         // extruded: true,
          radius: sizeLookup[Math.round(this.state.zoom)],
          elevationScale: 4,
          getPosition: d => d,
@@ -470,7 +323,6 @@ class App extends React.Component {
             [249,226,0]
          ],
          onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
-
       });
 
       const arcLayer = new ArcLayer({
@@ -493,11 +345,10 @@ class App extends React.Component {
          onHover: ({x, y, object}) => this.setTooltip(x, y, object ? object : null)
 
       });
+
       const layers = [];
       if (this.state.activeLayer === 'polylines') {
          layers.push(pathLayer);
-
-
       }
       if (this.state.activeLayer === 'hexbins') {
          layers.push(hexLayer);
@@ -506,106 +357,24 @@ class App extends React.Component {
          layers.push(arcLayer);
 
       }
-      // console.log(this.state.per + '%')
-      let views = [
-         {
-            id: '0',
-            width: '100%',
-            height: '100%',
-            controller: true,
-         },
-
-      ]
+      let views;
 
       if (this.state.activeView === 'grid') {
-         const size1 = 1 / 3 * 100 +'%';
-         const size2 = 2 / 3 * 100 + '%';
-         const size3 = '100%';
-         views = [
-            //Row 1
-            {
-               id: 'top',
-               width: size1,
-               height: size1,
-               controller: true
-            },
-            {
-               id: 'bottom',
-               x: size1,
-               y: 0,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-            {
-               id: '2',
-               x: size2,
-               y: 0,
-               width: size1,
-               height: size1,
-               controller: true
-            },
 
-            //Row 2
-            {
-               id: '3',
-               x: 0,
-               y: size1,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-            {
-               id: '4',
-               x: size1,
-               y: size1,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-            {
-               id: '5',
-               x: size2,
-               y: size1,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-
-            //Row 3
-            {
-               id: '6',
-               x: 0,
-               y: size2,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-            {
-               id: '7',
-               x: size1,
-               y: size2,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-            {
-               id: '8',
-               x: size2,
-               y: size2,
-               width: size1,
-               height: size1,
-               controller: true
-            },
-
-         ]
+         views = getGridView();
+      } else {
+         views = [{
+               id: '0',
+               width: '100%',
+               height: '100%',
+               controller: true,
+            }]
       }
       return (
          <>
             {
                this.renderTooltip()
             }
-
             <div className="attribution">
                © <a href="https://here.com">HERE</a> 2019. <a href="https://here.xyz">HERE XYZ</a>. Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
             </div>
@@ -617,7 +386,6 @@ class App extends React.Component {
                unmountOnExit
                appear
             >
-
                <div className="cover"/>
             </CSSTransition>
 
@@ -629,7 +397,6 @@ class App extends React.Component {
                unmountOnExit
                appear
             >
-
                <GridLabels labels={mapViews}/>
             </CSSTransition>
 
@@ -715,6 +482,7 @@ class App extends React.Component {
 
                <BottomBar
                   left={this.state.sidebarOpen ? "calc(275px + 45px)" : "100vw"}
+                  loaded={this.state.loaded}
                   data={data}
                   min={min}
                   max={max}
@@ -753,9 +521,7 @@ class App extends React.Component {
                            viewState={this.state['viewState' + i]}
                         >
                            <StaticMap
-                              mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
                               mapStyle={mapStyle}
-
                            />
                         </MapView>
                      )

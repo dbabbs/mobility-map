@@ -79,9 +79,6 @@ class Histogram extends React.Component {
 }
 
 class BottomBar extends React.Component {
-   constructor(props) {
-      super(props);
-   }
 
    render() {
       const currMin = new Date(this.props.currMin);
@@ -90,46 +87,63 @@ class BottomBar extends React.Component {
       return (
          <div style={{left: this.props.left}} className="bottom-bar">
             <div className="date-row">
-               <div>{currMin.toLocaleString().split(',')[0]}</div>
-               <div>{currMax.toLocaleString().split(',')[0]}</div>
-            </div>
-            <Histogram
-               data={this.props.data}
-               min={this.props.min}
-               max={this.props.max}
 
-            / >
-            <div style={{marginLeft: '5px'}}>
-               <Range
-                  onChange={this.props.filterDate}
-                  min={this.props.min}
-                  max={this.props.max}
-                  count={2}
-                  defaultValue={[this.props.min, this.props.max]}
-                  allowCross={false}
-                  trackStyle={[{ backgroundColor: '#363636' }]}
-                  handleStyle={[{
-                     backgroundColor: 'black',
-                     borderRadius: '0',
-                     border: '0',
-                     width: '8px',
-                     padding: '0'
-                  },
-                  {
-                     backgroundColor: 'black',
-                     borderRadius: '0',
-                     border: '0',
-                     width: '8px',
-                     padding: '0'
-                  }]}
-                  activeHandleStyle={[{
-                     background: 'green'
-                  }
+               <div>{this.props.data.length > 0 ? currMin.toLocaleString().split(',')[0] : ''}</div>
+               <div>{this.props.data.length > 0 ?  currMax.toLocaleString().split(',')[0] : ' '}</div>
 
-                  ]}
-                  railStyle={{ backgroundColor: '#D6D6D6' }}
-               />
             </div>
+            {
+               this.props.loaded &&
+               <>
+                  <Histogram
+                     data={this.props.data}
+                     min={this.props.min}
+                     max={this.props.max}
+
+                  / >
+                  <div style={{marginLeft: '5px'}}>
+                     <Range
+                        onChange={this.props.filterDate}
+                        min={this.props.min}
+                        max={this.props.max}
+                        count={2}
+                        defaultValue={[this.props.min, this.props.max]}
+                        allowCross={false}
+                        trackStyle={[{ backgroundColor: '#363636' }]}
+                        handleStyle={[{
+                           backgroundColor: 'black',
+                           borderRadius: '0',
+                           border: '0',
+                           width: '8px',
+                           padding: '0'
+                        },
+                        {
+                           backgroundColor: 'black',
+                           borderRadius: '0',
+                           border: '0',
+                           width: '8px',
+                           padding: '0'
+                        }]}
+                        activeHandleStyle={[{
+                           background: 'green'
+                        }
+
+                        ]}
+                        railStyle={{ backgroundColor: '#D6D6D6' }}
+                     />
+                  </div>
+               </>
+            }
+            {
+               !this.props.loaded &&
+               <div
+                  style={{height: '84px'}}
+               >
+
+               </div>
+            }
+
+
 
 
          </div>

@@ -135,9 +135,6 @@ async function start() {
    })
 
    lyft = await Promise.all(lyftPromises)
-   // lyft = lyft.filter(x => x.geometry.coordinates !== 'error');
-
-
 
    uber = uber.filter(row => row['Product Type'] !== 'UberEATS Marketplace')
    .filter(row => row['Trip or Order Status'] === 'COMPLETED')
@@ -151,7 +148,7 @@ async function start() {
          Latitude: Number(row['Dropoff Lat']),
          Longitude: Number(row['Dropoff Lng'])
       }
-      const { polyline, distance, routeError } = await route(startCoordinates, endCoordinates);
+      const { polyline, routeError } = await route(startCoordinates, endCoordinates);
       // routeError && console.log(routeError)
 
       const mod = {
@@ -181,7 +178,7 @@ async function start() {
       // console.log(geoCode);
       const endGeocode = await geocode(row['Finish Rental Address']);
 
-      const { polyline, distance, routeError } = await route(startGeocode, endGeocode);
+      const { polyline, routeError } = await route(startGeocode, endGeocode);
       routeError && console.log('jump error ' +routeError)
 
       const mod = {
@@ -214,7 +211,6 @@ async function start() {
        console.log("File was saved!");
    });
 }
-
 
 
 start();

@@ -1,68 +1,43 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Dylan's Mobility Service Map
 
-## Available Scripts
+__[View live map](https://dbabbs.github.io/mobility-map/)__
 
-In the project directory, you can run:
+![screenshot](screenshot.png)
 
-### `npm start`
+This project is an interactive visualization of my mobility service provider trips. I aggregated data from [Uber](https://www.uber.com/), [Jump](https://jump.com/), [Lyft](https://www.lyft.com/), and [Lime](https://www.li.me/) in order to make this map.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Explore trips across multiple cities using the grid view, filter trips by time with the histogram date filter, or explore total distance travelled by provider.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## How this was made
 
-### `npm test`
+### Data access
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Uber provides a handy [data download tool](https://help.uber.com/riders/article/download-your-data?nodeId=2c86900d-8408-4bac-b92a-956d793acd11) that provides access to all Uber trips, UberEATS orders, and JUMP trips. Submit a request for your data and it should be ready to download in a few hours.
 
-### `npm run build`
+Lyft enables a download of your trips through the *Ride History* in the mobile app. You can email yourself a CSV of your recent trips.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Lime was a little more difficult to get a copy of my data. They do not provide an easy export of your trip data like Uber and Lyft. Since I had used Lime in Berlin, I was eligible to request a copy of data under [Article 15 of GDPR - Right of access by the data subject](https://gdpr-info.eu/art-15-gdpr/). Nearly 2 months and 10+ emails later with Lime, I finally received a copy of my data.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+### Enriching the data
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Except for Lime, my trips data only included start and end addresses. The actual path travel was not included in the data downloads. In order to draw polylines on the map, I used the [HERE Routing API](https://developer.here.com/documentation/routing/topics/introduction.html) to calculate the estimated route from the starting point to the ending point. This process happened in the `prep/index.js` file.
 
-### `npm run eject`
+### Visualizing the Data
+- [React](https://reactjs.org/) was used to build the client UI
+- [HERE XYZ](https://here.xyz) was used to manage and store the geo data
+- [deck.gl](http://deck.gl) was used for the geospatial visualizations
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Installation
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+git clone https://github.com/dbabbs/mobility-map.git
+cd mobility-map
+npm install
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Make your own map
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+You are welcome to recreate this project with your own mobility data.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+`prep/index.js` is a helpful script to help wrangle and enrich your data into the proper GeoJSON format. Once you run your data through that script, it can be plugged into the React application.
