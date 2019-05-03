@@ -314,7 +314,7 @@ class App extends React.Component {
             [230,71,10],
             [249,226,0]
          ],
-         // onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
+         onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
       });
 
       const arcLayer = new ArcLayer({
