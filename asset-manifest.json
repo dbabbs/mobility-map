@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/mobility-map/static/css/main.3304ba27.chunk.css",
-    "main.js": "/mobility-map/static/js/main.f2848a7a.chunk.js",
-    "main.js.map": "/mobility-map/static/js/main.f2848a7a.chunk.js.map",
+    "main.js": "/mobility-map/static/js/main.6b4eabfd.chunk.js",
+    "main.js.map": "/mobility-map/static/js/main.6b4eabfd.chunk.js.map",
     "runtime~main.js": "/mobility-map/static/js/runtime~main.1e3e74a5.js",
     "runtime~main.js.map": "/mobility-map/static/js/runtime~main.1e3e74a5.js.map",
     "static/js/2.d6244c90.chunk.js": "/mobility-map/static/js/2.d6244c90.chunk.js",
     "static/js/2.d6244c90.chunk.js.map": "/mobility-map/static/js/2.d6244c90.chunk.js.map",
     "index.html": "/mobility-map/index.html",
-    "precache-manifest.8c9e2df16ea7c28d55c9a17633376954.js": "/mobility-map/precache-manifest.8c9e2df16ea7c28d55c9a17633376954.js",
+    "precache-manifest.9053eb131d7ed7ab4831d8e4b096f78c.js": "/mobility-map/precache-manifest.9053eb131d7ed7ab4831d8e4b096f78c.js",
     "service-worker.js": "/mobility-map/service-worker.js",
     "static/css/main.3304ba27.chunk.css.map": "/mobility-map/static/css/main.3304ba27.chunk.css.map",
     "static/media/bike.svg": "/mobility-map/static/media/bike.ba4fb8df.svg",
