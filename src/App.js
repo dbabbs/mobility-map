@@ -294,6 +294,9 @@ class App extends React.Component {
          pickable: true,
          autoHighlight: true,
          highlightColor: [249,226,0],
+         parameters: {
+            depthTest: false
+         },
          onHover: (z) => {
             // !this.state.transitionActive && this.setTooltip(z.x, z.y, z.object ? z.object : null)
          }
