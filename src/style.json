@@ -10,7 +10,7 @@
          ]
       }
    },
-   "glyphs": "https://free.tilehosting.com/fonts/{fontstack}/{range}.pbf?key=Dsa0rAKgsxdRRnxDnm6b",
+   "glyphs": "https://assets.vector.hereapi.com/fonts/{fontstack}/{range}.pbf",
    "layers": [{
          "id": "background",
          "type": "background",
@@ -192,7 +192,10 @@
          ],
          "layout": {
             "symbol-placement": "line",
-            "text-field": "{name}"
+            "text-field": "{name}",
+            "text-font": [
+               "Fira GO Regular"
+            ]
          },
          "paint": {
             "text-color": "#9D9D9D",
@@ -221,7 +224,10 @@
          ],
          "layout": {
             "symbol-placement": "line",
-            "text-field": "{name}"
+            "text-field": "{name}",
+            "text-font": [
+               "Fira GO Regular"
+            ]
          },
          "paint": {
             "text-color": "#9D9D9D",
@@ -244,6 +250,9 @@
          ],
          "layout": {
             "text-field": "{name}",
+            "text-font": [
+               "Fira GO Regular"
+            ],
             "text-size": {
                "stops": [
                   [
@@ -288,6 +297,9 @@
          ],
          "layout": {
             "text-field": "{name}",
+            "text-font": [
+               "Fira GO Regular"
+            ],
             "text-size": {
                "stops": [
                   [
