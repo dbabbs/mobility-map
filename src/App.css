@@ -8,6 +8,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.map-container {
+   top: 0;
+   left: 290px;
+   width: calc(100% - 290px);
+   height: 100%;
+   position: absolute;
+   z-index: 100;
+}
 a {
    color: black;
    transition: .3s all;

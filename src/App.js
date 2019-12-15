@@ -201,6 +201,16 @@ class App extends React.Component {
             transitionDuration: 6000,
             transitionEasing: t => t,
             transitionInterpolator,
+         },
+         viewState1: {
+            longitude: 13.404954,
+            latitude: 52.520008,
+            zoom: 10.5,
+            pitch: 60,
+            bearing: 0,
+            transitionDuration: 6000,
+            transitionEasing: t => t,
+            transitionInterpolator,
          }
       });
    }
@@ -358,12 +368,21 @@ class App extends React.Component {
 
          views = getGridView();
       } else {
-         views = [{
+         views = [
+            {
                id: '0',
-               width: '100%',
+               width: '50%',
                height: '100%',
                controller: true,
-            }]
+            },
+            {
+               id: '1',
+               width: '50%',
+               height: '100%',
+               x: '50%',
+               controller: true,
+            }
+         ]
       }
       return (
 
@@ -398,9 +417,7 @@ class App extends React.Component {
 
 
 
-            <Sidebar
-               height={this.state.sidebarOpen ? "710px" : "102px"}
-            >
+            <Sidebar>
                <h1>Dylan's Mobility Service Map</h1>
 
 
@@ -462,35 +479,19 @@ class App extends React.Component {
                      </Section>
                   </>
                }
-
-               <Button
-                  text={this.state.sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-                  handleClick={this.moveSidebar}
-               />
-
-
             </Sidebar>
-            {
 
-               <BottomBar
-                  left={this.state.sidebarOpen ? "calc(275px + 45px)" : "100vw"}
-                  loaded={this.state.loaded}
-                  data={data}
-                  min={min}
-                  max={max}
-                  currMin={this.state.minDate}
-                  currMax={this.state.maxDate}
-                  filterDate={this.filterDate}
-               />
-
-            }
-            {
-               /*
-               initialViewState={initialViewState}
-               viewState={this.state.viewState}
-               onViewStateChange={this.onViewStateChange}
-               */
-            }
+            <BottomBar
+               left={this.state.sidebarOpen ? "calc(275px + 45px)" : "100vw"}
+               loaded={this.state.loaded}
+               data={data}
+               min={min}
+               max={max}
+               currMin={this.state.minDate}
+               currMax={this.state.maxDate}
+               filterDate={this.filterDate}
+            />
+            <div className="map-container">
                <DeckGL
                   onLoad={this.onLoad}
                   layers={layers}
@@ -522,6 +523,7 @@ class App extends React.Component {
 
 
                </DeckGL>
+            </div>
          </>
       );
    }

@@ -2,16 +2,14 @@
    position: absolute;
    top: 0;
    left: 0;
-   margin: 15px;
-   padding: 15px 15px 0 15px;
-   box-sizing: border-box;
+   padding: 15px 15px 15px 15px;
+   /* box-sizing: border-box; */
    background: #F9FAF9;
    z-index: 50000;
-   border-radius: 2px;
    width: 290px;
    font-size: 14px;
    box-sizing: border-box;
-   max-height: calc(100vh - 30px);
+   height: 100vh;
    overflow: scroll;
    transition: .3s all;
 }
