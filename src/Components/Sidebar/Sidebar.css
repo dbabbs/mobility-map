@@ -2,14 +2,14 @@
    position: absolute;
    top: 0;
    left: 0;
-   padding: 15px 15px 15px 15px;
+   padding: 15px 15px 0px 15px;
    /* box-sizing: border-box; */
    background: #F9FAF9;
    z-index: 50000;
    width: 290px;
    font-size: 14px;
    box-sizing: border-box;
-   height: 100vh;
+   height: 100%;
    overflow: scroll;
    transition: .3s all;
 }

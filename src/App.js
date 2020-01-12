@@ -1,5 +1,8 @@
 import React from 'react';
 
+//Data
+import dataPath from './data.json';
+
 //DeckGL
 import DeckGL from '@deck.gl/react';
 import {StaticMap, FlyToInterpolator } from 'react-map-gl';
@@ -49,7 +52,7 @@ class App extends React.Component {
          providers: providers,
          activeMetric: 'trips',
          activeLayer: 'polylines',
-         activeView: 'single',
+         activeView: 'double',
          minDate: new Date('08/07/1995'), //Happy birthday to me
          maxDate: new Date()
       }
@@ -364,10 +367,17 @@ class App extends React.Component {
       }
       let views;
 
-      if (this.state.activeView === 'grid') {
-
-         views = getGridView();
-      } else {
+      if (this.state.activeView === 'single') {
+         views = [
+            {
+               id: '0',
+               width: '100%',
+               height: '100%',
+               controller: true,
+            }
+         ]
+         
+      } else if (this.state.activeView === 'double') {
          views = [
             {
                id: '0',
@@ -383,6 +393,8 @@ class App extends React.Component {
                controller: true,
             }
          ]
+      } else {
+         views = getGridView();
       }
       return (
 
@@ -404,19 +416,7 @@ class App extends React.Component {
                <div className="cover"/>
             </CSSTransition>
 
-            <CSSTransition
-               timeout={1000}
-               in={this.state.activeView === 'grid'}
-               classNames="blur-grid"
-               unmountOnExit
-               appear
-            >
-               <GridLabels labels={mapViews}/>
-            </CSSTransition>
-
-
-
-
+            
             <Sidebar>
                <h1>Dylan's Mobility Service Map</h1>
 
@@ -426,7 +426,7 @@ class App extends React.Component {
                   <>
                      <p>A visualization of my mobility service trips. Made by <a href="https://twitter.com/dbabbs">@dbabbs</a></p>
                      <Section>
-                        <h2>View Analytics</h2>
+                        <h2>Trip Analytics</h2>
                         <Selector
                            type="metric"
                            options={['trips', 'price', 'distance']}
@@ -472,7 +472,7 @@ class App extends React.Component {
                         <h2>Toggle Grid View</h2>
                         <Selector
                            type="view"
-                           options={['single', 'grid']}
+                           options={['single', 'double', 'grid']}
                            active={this.state.activeView}
                            changeActive={this.changeActive}
                         />
@@ -492,6 +492,15 @@ class App extends React.Component {
                filterDate={this.filterDate}
             />
             <div className="map-container">
+               <CSSTransition
+                  timeout={1000}
+                  in={this.state.activeView === 'grid'}
+                  classNames="blur-grid"
+                  unmountOnExit
+                  appear
+               >
+                  <GridLabels labels={mapViews}/>
+               </CSSTransition>
                <DeckGL
                   onLoad={this.onLoad}
                   layers={layers}
