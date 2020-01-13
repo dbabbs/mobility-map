@@ -1,6 +1,6 @@
 .bottom-bar {
    position: absolute;
-   width: calc(100vw - 275px - 45px - 15px);
+   width: calc(100vw - 290px - 45px - 15px);
    bottom: 15px;
    /* height: 110px; */
    background: #F9FAF9;

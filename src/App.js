@@ -197,8 +197,8 @@ class App extends React.Component {
       this.setState({
          viewState0: {
             zoom: 11,
-            latitude: 47.61931309876645,
-            longitude: -122.38086333961408,
+            latitude: 47.611171, 
+            longitude: -122.313158,
             bearing: 22,
             pitch: 60,
             transitionDuration: 6000,
@@ -309,9 +309,6 @@ class App extends React.Component {
          highlightColor: [249,226,0],
          parameters: {
             depthTest: false
-         },
-         onHover: (z) => {
-            // !this.state.transitionActive && this.setTooltip(z.x, z.y, z.object ? z.object : null)
          }
       });
 
@@ -469,7 +466,7 @@ class App extends React.Component {
                      <Section
                         paddingBottom={0}
                       >
-                        <h2>Toggle Grid View</h2>
+                        <h2>Toggle View</h2>
                         <Selector
                            type="view"
                            options={['single', 'double', 'grid']}
