@@ -1,7 +1,6 @@
 const getGridView = () => {
    const size1 = 1 / 3 * 100 +'%';
    const size2 = 2 / 3 * 100 + '%';
-   const size3 = '100%';
    return [
       //Row 1
       {

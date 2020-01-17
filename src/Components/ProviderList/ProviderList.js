@@ -41,7 +41,7 @@ class ProviderList extends React.Component {
                         value = filteredData.length;
                         max = this.props.data.length;
                      } else if (this.props.active === 'distance') {
-                        if (value = filteredData.map(x => x.properties.distance).length === 0) {
+                        if (value === filteredData.map(x => x.properties.distance).length === 0) {
                            value = 0;
                         } else {
                            value = filteredData.map(x => x.properties.distance)
@@ -52,7 +52,7 @@ class ProviderList extends React.Component {
                            .reduce((a,b) => a + b);
                      } else if (this.props.active === 'price') {
 
-                        if (filteredData.map(x => x.properties.cost).length == 0) {
+                        if (filteredData.map(x => x.properties.cost).length === 0) {
                            value = 0;
                         } else {
                            value = filteredData.map(x => x.properties.cost)
@@ -83,7 +83,7 @@ class ProviderList extends React.Component {
                   }
                   return <div
                         key={i}
-                        className="provider"
+                        className="provider noselect"
                         onClick={() => this.props.handleClick(provider.name)}
                      >
                      <div style={style} className="line" />
@@ -92,12 +92,7 @@ class ProviderList extends React.Component {
 
                      </span>
                      {
-
-                        <span className="sub">
-                           {
-                              format
-                           }
-                        </span>
+                        <span className="sub">{ format }</span>
                      }
 
                      <div className="icon-container">

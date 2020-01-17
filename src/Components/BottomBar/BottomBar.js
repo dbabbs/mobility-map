@@ -85,7 +85,7 @@ class BottomBar extends React.Component {
       const currMax = new Date(this.props.currMax);
 
       return (
-         <div style={{left: this.props.left}} className="bottom-bar">
+         <div className="bottom-bar">
             <div className="date-row">
 
                <div>{this.props.data.length > 0 ? currMin.toLocaleString().split(',')[0] : ''}</div>

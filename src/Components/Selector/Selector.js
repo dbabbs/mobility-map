@@ -17,7 +17,7 @@ class Selector extends React.Component {
          <div style={grid} className="selector-outside">
             {
                this.props.options.map((x,i) => {
-                  const classes = ['selector-option'];
+                  const classes = ['selector-option', 'noselect'];
                   if (this.props.active === x) {
                      if (i === 0) {
                         classes.push('left-selector-active');

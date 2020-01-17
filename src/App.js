@@ -9,10 +9,8 @@ import {MapView} from '@deck.gl/core';
 
 //CSS
 import './App.css';
-import {CSSTransition} from 'react-transition-group';
 
 //Components
-import Button from './Components/Button/Button'
 import mapStyle from './style.json'
 import Selector from './Components/Selector/Selector';
 import Section from './Components/SidebarSection/Section'
@@ -48,7 +46,7 @@ class App extends React.Component {
          viewState8: mapViews[8],
          data: [],
          curr: 0,
-         providers: providers,
+         providers,
          activeMetric: 'trips',
          activeLayer: 'polylines',
          activeView: 'double',
@@ -105,10 +103,6 @@ class App extends React.Component {
             maxDate: max
          })
       });
-      
-
-      
-
 
    }
 
@@ -409,7 +403,7 @@ class App extends React.Component {
                // this.renderTooltip()
             }
             <div className="attribution">
-               © <a href="https://here.com">HERE</a> 2019. Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+               © <a href="https://here.com">HERE</a> 2019. Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" rel="noopener noreferrer" target="_blank">CC 3.0 BY</a>
             </div>
             {/* <CSSTransition
                timeout={1000}
@@ -488,7 +482,6 @@ class App extends React.Component {
             </Sidebar>
 
             <BottomBar
-               left={this.state.sidebarOpen ? "calc(275px + 45px)" : "100vw"}
                loaded={this.state.loaded}
                data={data}
                min={min}
