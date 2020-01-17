@@ -32,7 +32,7 @@ const mapViews = [{
    {
       longitude: 13.404954,
       latitude: 52.520008,
-      zoom: 8,
+      zoom: 15,
       pitch: 60,
       bearing: -60,
       name: 'Berlin, Germany'
