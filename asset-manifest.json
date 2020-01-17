@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/mobility-map/static/css/main.1f6d7124.chunk.css",
-    "main.js": "/mobility-map/static/js/main.b0550d80.chunk.js",
-    "main.js.map": "/mobility-map/static/js/main.b0550d80.chunk.js.map",
+    "main.css": "/mobility-map/static/css/main.81414a72.chunk.css",
+    "main.js": "/mobility-map/static/js/main.add2158a.chunk.js",
+    "main.js.map": "/mobility-map/static/js/main.add2158a.chunk.js.map",
     "runtime~main.js": "/mobility-map/static/js/runtime~main.1e3e74a5.js",
     "runtime~main.js.map": "/mobility-map/static/js/runtime~main.1e3e74a5.js.map",
-    "static/js/2.91e36eb2.chunk.js": "/mobility-map/static/js/2.91e36eb2.chunk.js",
-    "static/js/2.91e36eb2.chunk.js.map": "/mobility-map/static/js/2.91e36eb2.chunk.js.map",
+    "static/js/2.e1cd4ef4.chunk.js": "/mobility-map/static/js/2.e1cd4ef4.chunk.js",
+    "static/js/2.e1cd4ef4.chunk.js.map": "/mobility-map/static/js/2.e1cd4ef4.chunk.js.map",
     "index.html": "/mobility-map/index.html",
-    "precache-manifest.9b67191e701febd0d5643ddc85500cf4.js": "/mobility-map/precache-manifest.9b67191e701febd0d5643ddc85500cf4.js",
+    "precache-manifest.49d664bd3db899e4de2033629eda99ea.js": "/mobility-map/precache-manifest.49d664bd3db899e4de2033629eda99ea.js",
     "service-worker.js": "/mobility-map/service-worker.js",
-    "static/css/main.1f6d7124.chunk.css.map": "/mobility-map/static/css/main.1f6d7124.chunk.css.map",
+    "static/css/main.81414a72.chunk.css.map": "/mobility-map/static/css/main.81414a72.chunk.css.map",
     "static/media/bike.svg": "/mobility-map/static/media/bike.ba4fb8df.svg",
     "static/media/car.svg": "/mobility-map/static/media/car.18180132.svg",
     "static/media/scooter.svg": "/mobility-map/static/media/scooter.47924a3a.svg"
