@@ -1,8 +1,5 @@
 import React from 'react';
 
-//Data
-import dataPath from './data.json';
-
 //DeckGL
 import DeckGL from '@deck.gl/react';
 import {StaticMap, FlyToInterpolator } from 'react-map-gl';
