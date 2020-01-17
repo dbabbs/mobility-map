@@ -1,4 +1,5 @@
 import React from 'react';
+import { easeCubic } from "d3-ease";
 
 //DeckGL
 import DeckGL from '@deck.gl/react';
@@ -201,7 +202,7 @@ class App extends React.Component {
             bearing: 22,
             pitch: 60,
             transitionDuration: 10000,
-            transitionEasing: t => t,
+            transitionEasing: easeCubic,
             transitionInterpolator,
          },
          viewState1: {
