@@ -28,6 +28,8 @@ import Sidebar from './Components/Sidebar/Sidebar';
 import getGridView from './views';
 import {sizeLookup, mapViews, providers, months} from './config';
 
+import url from './updated.json'
+
 const transitionInterpolator = new FlyToInterpolator();
 
 class App extends React.Component {
@@ -86,23 +88,29 @@ class App extends React.Component {
       console.log('Thanks for taking a look under the hood. Questions? dylan.babbs@gmail.com')
       document.getElementById('deckgl-overlay').oncontextmenu = evt => evt.preventDefault();
 
-      const url = `https://xyz.api.here.com/hub/spaces/2vDrakce/search?limit=5000&clientId=cli&access_token=AJXABoLRYHN488wIHnxheik`;
-      const data = await (await fetch(url) ).json();
+      // const url = `https://xyz.api.here.com/hub/spaces/2vDrakce/search?limit=5000&clientId=cli&access_token=AJXABoLRYHN488wIHnxheik`;
+ 
+      const data = url
+
       this.setState({
          data: data.features,
          loaded: true
+      }, () => {
+         const min = Math.min.apply(null,
+            this.state.data.map(x => new Date(x.properties.startDate))
+         );
+         const max = Math.max.apply(null,
+            this.state.data.map(x => new Date(x.properties.startDate))
+         );
+  
+         this.setState({
+            minDate: min,
+            maxDate: max
+         })
       });
+      
 
-      const min = Math.min.apply(null,
-         this.state.data.map(x => new Date(x.properties.startDate))
-      );
-      const max = Math.max.apply(null,
-         this.state.data.map(x => new Date(x.properties.startDate))
-      );
-      this.setState({
-         minDate: min,
-         maxDate: max
-      })
+      
 
 
    }
@@ -286,10 +294,12 @@ class App extends React.Component {
          data = data.filter(x => new Date(x.properties.startDate) >= this.state.minDate)
             .filter(x => new Date(x.properties.startDate) <= this.state.maxDate)
 
+
          hexd = [
-            ...data.map(x => x.properties.startCoordinates),
-            ...data.map(x => x.properties.endCoordinates)
+            ...data.map(x => x.properties.startCoordinates.map(x => Number(x))),
+            ...data.map(x => x.properties.endCoordinates.map(x => Number(x)))
          ]
+
       }
 
       const pathLayer = new PathLayer({
@@ -329,6 +339,8 @@ class App extends React.Component {
          ],
          onHover: ({x, y, object}) => !this.state.transitionActive && this.setTooltip(x, y, object ? object : null)
       });
+      
+
 
       const arcLayer = new ArcLayer({
          id: 'arc-layer',
@@ -397,21 +409,21 @@ class App extends React.Component {
 
          <>
             {
-               this.renderTooltip()
+               // this.renderTooltip()
             }
             <div className="attribution">
-               © <a href="https://here.com">HERE</a> 2019. <a href="https://here.xyz">HERE XYZ</a>. Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+               © <a href="https://here.com">HERE</a> 2019. Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
             </div>
-            <CSSTransition
+            {/* <CSSTransition
                timeout={1000}
                in={this.state.in}
                classNames="blur"
                onEnter={() => console.log('entering..')}
                unmountOnExit
                appear
-            >
-               <div className="cover"/>
-            </CSSTransition>
+            > */}
+               {/* <div className="cover"/> */}
+            {/* </CSSTransition> */}
 
             
             <Sidebar>
@@ -489,15 +501,11 @@ class App extends React.Component {
                filterDate={this.filterDate}
             />
             <div className="map-container">
-               <CSSTransition
-                  timeout={1000}
-                  in={this.state.activeView === 'grid'}
-                  classNames="blur-grid"
-                  unmountOnExit
-                  appear
-               >
+               {
+                  this.state.activeView === 'grid' &&
                   <GridLabels labels={mapViews}/>
-               </CSSTransition>
+               }
+               
                <DeckGL
                   onLoad={this.onLoad}
                   layers={layers}
