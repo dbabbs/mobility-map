@@ -212,7 +212,7 @@ class App extends React.Component {
             pitch: 60,
             bearing: 0,
             transitionDuration: 10000,
-            transitionEasing: t => t,
+            transitionEasing: easeCubic,
             transitionInterpolator,
          }
       });
