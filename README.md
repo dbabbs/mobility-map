@@ -24,7 +24,6 @@ Except for Lime, my trips data only included start and end addresses. The actual
 
 ### Visualizing the Data
 - [React](https://reactjs.org/) was used to build the client UI
-- [HERE XYZ](https://here.xyz) was used to manage and store the geo data
 - [deck.gl](http://deck.gl) was used for the geospatial visualizations
 
 ## Installation
