@@ -21,10 +21,10 @@ const sizeLookup = {
    20: 5
 }
 
-const mapViews = [{
+const viewStates = [{
       longitude: -122.35021467990396,
       latitude: 47.623954436942995,
-      zoom: 15, //8
+      zoom: 14, //8
       pitch: 60,
       bearing: -20,
       name: 'Seattle, WA'
@@ -32,7 +32,7 @@ const mapViews = [{
    {
       longitude: 13.404954,
       latitude: 52.520008,
-      zoom: 15,
+      zoom: 14,
       pitch: 60,
       bearing: -60,
       name: 'Berlin, Germany'
@@ -129,7 +129,7 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 
 export {
    sizeLookup,
-   mapViews,
+   viewStates,
    providers,
    months
 };
