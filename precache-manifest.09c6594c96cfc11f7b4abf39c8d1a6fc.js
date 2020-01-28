@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "83e27228e77fdf572b4b78051d711969",
+    "revision": "b6e8877ae43e203749f1a5fd85035dfc",
     "url": "/mobility-map/index.html"
   },
   {
-    "revision": "72839d4c4713ed4b5221",
+    "revision": "87d8d63ac18dcfb9b1c2",
     "url": "/mobility-map/static/css/main.5c7ec82f.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/mobility-map/static/js/2.9109d95e.chunk.js"
   },
   {
-    "revision": "72839d4c4713ed4b5221",
-    "url": "/mobility-map/static/js/main.0a8befcb.chunk.js"
+    "revision": "87d8d63ac18dcfb9b1c2",
+    "url": "/mobility-map/static/js/main.f21fdfce.chunk.js"
   },
   {
     "revision": "e928762b34ec1b14cadf",
