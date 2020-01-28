@@ -123,8 +123,9 @@ class App extends React.Component {
       this.setState({
          in: false
       })
-      const { viewStates } = this.state;
+      const viewStates = Object.assign({}, this.state.viewStates);
       viewStates[0] = {
+         name: 'Seattle, WA',
          zoom: 11,
          latitude: 47.611171,
          longitude: -122.313158,
@@ -135,6 +136,7 @@ class App extends React.Component {
          transitionInterpolator,
       }
       viewStates[1] = {
+         name: 'Berlin, DE',
          longitude: 13.404954,
          latitude: 52.520008,
          zoom: 11,
@@ -315,6 +317,7 @@ class App extends React.Component {
       } else {
          views = getGridView();
       }
+      console.log(viewStates)
       return (
          <>
             <MapAttribution />
