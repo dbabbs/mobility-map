@@ -10,11 +10,10 @@ import getGridView from '../views';
 import hexLayer from './layers/hex';
 import arcLayer from './layers/arcs';
 import pathLayer from './layers/paths';
-
+import filterState from '../util/filter';
 import { connect } from 'react-redux';
 
 const Map = ({ activeView, activeLayer, data, zoom, providers, dispatch }) => {
-   console.log('render');
    useEffect(() => {
       document.getElementById('deckgl-overlay').oncontextmenu = (evt) =>
          evt.preventDefault();
@@ -45,14 +44,10 @@ const Map = ({ activeView, activeLayer, data, zoom, providers, dispatch }) => {
                dispatch({ type: 'SET_VIEW_STATE', payload })
             }
          >
-            {views.map((x, i) => {
+            {views.map((view, i) => {
                return (
                   <MapView
-                     x={x.x}
-                     y={x.y}
-                     width={x.width}
-                     height={x.height}
-                     controller={x.controller}
+                     {...view}
                      id={i.toString()}
                      key={i}
                      initialViewState={viewStates[i]}
@@ -67,6 +62,6 @@ const Map = ({ activeView, activeLayer, data, zoom, providers, dispatch }) => {
    );
 };
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => filterState(state);
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 export default connect(mapStateToProps, mapDispatchToProps)(Map);

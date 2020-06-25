@@ -13,6 +13,8 @@ const initialState = {
    activeMetric: 'trips',
    activeLayer: 'polylines',
    activeView: 'double',
+   initialMin: Math.min(...data.map((x) => new Date(x.properties.startDate))),
+   initialMax: Math.max(...data.map((x) => new Date(x.properties.startDate))),
    minDate: Math.min(...data.map((x) => new Date(x.properties.startDate))),
    maxDate: Math.max(...data.map((x) => new Date(x.properties.startDate))),
 };
@@ -27,9 +29,8 @@ const reducer = (state = initialState, action) => {
          copy.activeMetric = value;
       } else if (key === 'layer') {
          copy.activeLayer = value;
-      } else if (type === 'view') {
+      } else if (key === 'view') {
          copy.activeView = value;
-         copy.in = false;
       }
    } else if (action.type === 'SET_PROVIDER') {
       const providers = [...copy.providers];

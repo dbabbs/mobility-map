@@ -3,6 +3,7 @@ import './Sidebar.css';
 import Selector from './Selector';
 import ProviderList from './ProviderList';
 import { connect } from 'react-redux';
+import filterState from '../util/filter';
 
 const Section = ({ children }) => {
    return (
@@ -41,7 +42,7 @@ const Sidebar = ({
                   options={['trips', 'price', 'distance']}
                   active={activeMetric}
                   changeActive={(key, value) =>
-                     this.props.dispatch({
+                     dispatch({
                         type: 'SET_ACTIVE',
                         payload: { key, value },
                      })
@@ -56,6 +57,7 @@ const Sidebar = ({
                   }
                   providers={providers}
                   data={data}
+                  activeMetric={activeMetric}
                />
                <p> Filter a mobility provider by clicking on it. </p>
             </Section>
@@ -100,6 +102,6 @@ const Sidebar = ({
    );
 };
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => filterState(state);
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
