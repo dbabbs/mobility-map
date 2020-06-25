@@ -1,9 +1,9 @@
 import React from 'react';
 import './ProviderList.css';
 
-import carIcon from '../../icons/car.svg';
-import bikeIcon from '../../icons/bike.svg';
-import scooterIcon from '../../icons/scooter.svg';
+import carIcon from '../icons/car.svg';
+import bikeIcon from '../icons/bike.svg';
+import scooterIcon from '../icons/scooter.svg';
 
 const icons = {
    car: carIcon,

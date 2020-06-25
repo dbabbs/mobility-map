@@ -1,15 +1,14 @@
 import { PathLayer } from '@deck.gl/layers';
-const paths = ({ data, transitionData, transitionActive, providers }) => {
+const paths = ({ data, providers }) => {
    return new PathLayer({
       id: 'path-layer',
-      data: transitionActive ? transitionData : data,
+      data,
       widthScale: 3,
       widthMinPixels: 3,
       widthMaxPixels: 3,
-      getPath: (d) =>
-         transitionActive ? d.coordinates : d.geometry.coordinates,
+      getPath: (d) => d.geometry.coordinates,
       getColor: (d) => {
-         let provider = transitionActive ? d.provider : d.properties.provider;
+         const provider = d.properties.provider;
          return providers.filter((x) => x.name === provider)[0].color2;
       },
       rounded: true,

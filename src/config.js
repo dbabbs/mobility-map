@@ -1,4 +1,4 @@
-const sizeLookup = {
+export const sizeLookup = {
    1: 500000,
    2: 200000,
    3: 100000,
@@ -18,16 +18,20 @@ const sizeLookup = {
    17: 10,
    18: 5,
    19: 5,
-   20: 5
-}
+   20: 5,
+};
 
-const viewStates = [{
+export const MAPBOX_TOKEN =
+   'pk.eyJ1IjoiYmFiYnMiLCJhIjoiY2s1b2JoMjZvMGYydzNmbXAxMXp1NWZhZyJ9.LEHmtAFLAij67eF-54FjxA';
+
+export const viewStates = [
+   {
       longitude: -122.35021467990396,
       latitude: 47.623954436942995,
       zoom: 14, //8
       pitch: 60,
       bearing: -20,
-      name: 'Seattle, WA'
+      name: 'Seattle, WA',
    },
    {
       longitude: 13.404954,
@@ -35,7 +39,7 @@ const viewStates = [{
       zoom: 14,
       pitch: 60,
       bearing: -60,
-      name: 'Berlin, Germany'
+      name: 'Berlin, Germany',
    },
    {
       longitude: -122.41251212803706,
@@ -43,7 +47,7 @@ const viewStates = [{
       zoom: 8,
       pitch: 20,
       bearing: 0,
-      name: 'San Francisco, CA'
+      name: 'San Francisco, CA',
    },
    {
       longitude: -117.19453161713136,
@@ -51,7 +55,7 @@ const viewStates = [{
       zoom: 8,
       pitch: 20,
       bearing: 0,
-      name: 'San Diego, CA'
+      name: 'San Diego, CA',
    },
    {
       longitude: -87.65142984345374,
@@ -59,7 +63,7 @@ const viewStates = [{
       zoom: 10,
       pitch: 20,
       bearing: 0,
-      name: 'Chicago, IL'
+      name: 'Chicago, IL',
    },
    {
       longitude: -66.06411721833007,
@@ -67,7 +71,7 @@ const viewStates = [{
       zoom: 11,
       pitch: 20,
       bearing: 0,
-      name: 'San Juan, PR'
+      name: 'San Juan, PR',
    },
    {
       longitude: -83.03440701349251,
@@ -75,15 +79,15 @@ const viewStates = [{
       zoom: 8,
       pitch: 20,
       bearing: 0,
-      name: 'Detroit, MI'
+      name: 'Detroit, MI',
    },
    {
-      longitude: 28.979530,
+      longitude: 28.97953,
       latitude: 41.015137,
       zoom: 10,
       pitch: 20,
       bearing: 0,
-      name: 'Istanbul, Turkey'
+      name: 'Istanbul, Turkey',
    },
    {
       longitude: 4.899431,
@@ -91,45 +95,52 @@ const viewStates = [{
       zoom: 10,
       pitch: 20,
       bearing: 0,
-      name: 'Amsterdam, Netherlands'
-   }
-]
+      name: 'Amsterdam, Netherlands',
+   },
+];
 
-const providers = [{
+export const providers = [
+   {
       name: 'uber',
       color: '#276EF1',
       color2: [39, 110, 241, 200],
       modes: ['car'],
-      active: true
+      active: true,
    },
    {
       name: 'jump',
       color: '#E73A14',
       color2: [231, 58, 20, 200],
       modes: ['bike', 'scooter'],
-      active: true
+      active: true,
    },
    {
       name: 'lime',
       color: '#25CF00',
       color2: [37, 207, 0, 200],
       modes: ['bike', 'scooter'],
-      active: true
+      active: true,
    },
    {
       name: 'lyft',
       color: '#FE00D8',
       color2: [254, 0, 126, 200],
       modes: ['car'],
-      active: true
+      active: true,
    },
 ];
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-export {
-   sizeLookup,
-   viewStates,
-   providers,
-   months
-};
+export const months = [
+   'January',
+   'February',
+   'March',
+   'April',
+   'May',
+   'June',
+   'July',
+   'August',
+   'September',
+   'October',
+   'November',
+   'December',
+];

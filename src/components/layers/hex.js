@@ -1,9 +1,16 @@
 import { HexagonLayer } from '@deck.gl/aggregation-layers';
-import { sizeLookup } from '../config';
+import { sizeLookup } from '../../config';
+
+function aggregate(data) {
+   return [
+      ...data.map((x) => x.properties.startCoordinates.map((x) => Number(x))),
+      ...data.map((x) => x.properties.endCoordinates.map((x) => Number(x))),
+   ];
+}
 const hex = ({ data, zoom }) => {
    return new HexagonLayer({
       id: 'hexagon-layer',
-      data,
+      data: aggregate(data),
       pickable: true,
       radius: sizeLookup[Math.round(zoom)],
       elevationScale: 4,
