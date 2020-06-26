@@ -10,8 +10,8 @@ const initialState = {
    curr: 0,
    providers,
    activeMetric: 'trips',
-   activeLayer: 'animate',
-   activeView: 'single',
+   activeLayer: 'polylines',
+   activeView: 'double',
    initialMin: Math.min(...data.map((x) => new Date(x.properties.startDate))),
    initialMax: Math.max(...data.map((x) => new Date(x.properties.startDate))),
    minDate: Math.min(...data.map((x) => new Date(x.properties.startDate))),
@@ -22,7 +22,7 @@ const reducer = (state = initialState, action) => {
    const { payload, type } = action;
    const copy = { ...state };
 
-   if (action.type === 'SET_ACTIVE') {
+   if (type === 'SET_ACTIVE') {
       const { key, value } = payload;
       if (key === 'metric') {
          copy.activeMetric = value;
@@ -31,7 +31,7 @@ const reducer = (state = initialState, action) => {
       } else if (key === 'view') {
          copy.activeView = value;
       }
-   } else if (action.type === 'SET_PROVIDER') {
+   } else if (type === 'SET_PROVIDER') {
       const providers = [...copy.providers];
       providers.forEach((provider) => {
          if (provider.name === payload) {
@@ -39,7 +39,7 @@ const reducer = (state = initialState, action) => {
          }
       });
       copy.providers = providers;
-   } else if (action.type === 'SET_DATE_FILTER') {
+   } else if (type === 'SET_DATE_FILTER') {
       copy.minDate = new Date(payload[0]);
       copy.maxDate = new Date(payload[1]);
    }

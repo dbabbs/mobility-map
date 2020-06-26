@@ -44,13 +44,13 @@ const Histogram = ({ data, min, max }) => {
       .domain([0, d3.max(bins, (d) => d.length)]);
 
    return (
-      <div class="histogram" ref={container}>
+      <div className="histogram" ref={container}>
          <svg width={width} height={height}>
             <g>
                {bins.map((d, i) => (
                   <rect
                      key={i}
-                     class="bar"
+                     className="bar"
                      x={1}
                      transform={`translate(${x(d.x0)},${y(d.length)})`}
                      width={
@@ -92,6 +92,7 @@ const BottomBar = ({
                defaultValue={[initialMin, initialMax]}
                allowCross={false}
                trackStyle={[{ backgroundColor: '#363636' }]}
+               step={8000000}
                handleStyle={[
                   {
                      backgroundColor: 'black',

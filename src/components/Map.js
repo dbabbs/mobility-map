@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 
 import { MapView } from '@deck.gl/core';
 import GridLabels from './GridLabels';
 import { viewStates as initialViewStates, MAPBOX_TOKEN } from '../config';
 import DeckGL from '@deck.gl/react';
-import { StaticMap, FlyToInterpolator } from 'react-map-gl';
+import { StaticMap } from 'react-map-gl';
 import getGridView from '../views';
 
 import hexLayer from './layers/hex';
@@ -15,46 +15,46 @@ import filterState from '../util/filter';
 import { connect } from 'react-redux';
 import interpolate from '../util/interpolate';
 
-/*
- else if (action.type === 'SET_VIEW_STATE') {
-      const viewId = Number(payload.viewId);
-      copy.viewStates[viewId] = payload.viewState;
-   }
-*/
-
-const Map = ({ activeView, activeLayer, data, zoom, providers, dispatch }) => {
+const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
    const [time, setTime] = useState(0);
    const [viewStates, setViewStates] = useState(initialViewStates);
+   const [animation, setAnimation] = useState(false);
 
    useEffect(() => {
       document.getElementById('deckgl-overlay').oncontextmenu = (evt) =>
          evt.preventDefault();
-
-      let i = 0;
-      const step = () => {
-         // if (i % 1 === 0) {
-         // }
-         setTime(i);
-         setViewStates((temp) => {
-            const copy = [...temp];
-            copy[0] = {
-               ...copy[0],
-               bearing: copy[0].bearing + 0.04,
-            };
-            return copy;
-         });
-         // if (i > 5000) {
-         //    i = 0;
-         // }
-         i++;
-
-         requestAnimationFrame(step);
-      };
-
-      const interval = requestAnimationFrame(step);
-
-      // return cancelAnimationFrame(interval);
    }, []);
+   // console.log(activeLayer === 'animate');
+
+   const interval = useRef(null);
+
+   const step = () => {
+      console.log(activeLayer);
+      setTime((t) => t + 1);
+      setViewStates((temp) => {
+         const copy = [...temp];
+         copy[0] = {
+            ...copy[0],
+            bearing: copy[0].bearing + 0.04,
+         };
+         return copy;
+      });
+      requestAnimationFrame(step);
+   };
+
+   useEffect(() => {
+      if (activeLayer === 'animate') {
+         // setAnimation(true);
+
+         interval.current = requestAnimationFrame(step);
+      } else {
+         console.log('cancel...');
+         cancelAnimationFrame(interval.current);
+         interval.current = null;
+      }
+
+      return () => cancelAnimationFrame(interval.current);
+   }, [activeLayer === 'animate']);
 
    const tripsData = useMemo(() => interpolate(data), [
       ...providers.map((x) => x.active),

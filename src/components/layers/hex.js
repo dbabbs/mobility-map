@@ -15,9 +15,14 @@ const hex = ({ data }) => {
       extruded: true,
       elevationScale: 4,
       getPosition: (d) => d,
-      colorRange: ['#f1eef6', '#bdc9e1', '#74a9cf', '#0570b0'].map((x) =>
-         hextToRgba(x)
-      ),
+      colorRange: [
+         '#ffffcc',
+         '#c7e9b4',
+         '#7fcdbb',
+         '#41b6c4',
+         '#2c7fb8',
+         '#253494',
+      ].map((x) => hextToRgba(x)),
    });
 };
 

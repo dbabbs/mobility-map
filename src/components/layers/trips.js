@@ -5,7 +5,7 @@ const trips = ({ data, providers, time }) => {
       id: 'trips-layer',
       data,
       getPath: (d) => d.path,
-      getTimestamps: (d, { index }) => d.path.map((x, i) => i + index * 2),
+      getTimestamps: (d, { index }) => d.path.map((x, i) => i + index),
       getColor: ({ provider }) =>
          providers.filter((x) => x.name === provider)[0].color2,
       opacity: 1,
