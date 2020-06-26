@@ -1,8 +1,5 @@
 import { createStore } from 'redux';
 import { viewStates, providers } from '../config';
-
-import { cloneDeep } from 'lodash';
-
 import { features as data } from '../assets/data.json';
 
 const initialState = {

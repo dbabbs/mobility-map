@@ -1,10 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './BottomBar.css';
 import * as d3 from 'd3';
-
 import { Range } from 'rc-slider';
 import './Slider.css';
-import filterState from '../util/filter';
 import { connect } from 'react-redux';
 
 function addDays(date, days) {
@@ -14,8 +12,6 @@ function addDays(date, days) {
 }
 
 const Histogram = ({ data, min, max }) => {
-   // document.getElementById('chart').innerHTML = '';
-
    const [width, setWidth] = useState(null);
    const container = useRef(null);
    useEffect(() => {

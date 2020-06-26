@@ -1,26 +1,3 @@
-export const sizeLookup = {
-   1: 500000,
-   2: 200000,
-   3: 100000,
-   4: 50000,
-   5: 25000,
-   6: 12500,
-   7: 6250,
-   8: 3000,
-   9: 1200,
-   10: 600,
-   11: 400,
-   12: 200,
-   13: 100,
-   14: 80,
-   15: 40,
-   16: 20,
-   17: 10,
-   18: 5,
-   19: 5,
-   20: 5,
-};
-
 export const MAPBOX_TOKEN =
    'pk.eyJ1IjoiYmFiYnMiLCJhIjoiY2s1b2JoMjZvMGYydzNmbXAxMXp1NWZhZyJ9.LEHmtAFLAij67eF-54FjxA';
 
@@ -128,19 +105,4 @@ export const providers = [
       modes: ['car'],
       active: true,
    },
-];
-
-export const months = [
-   'January',
-   'February',
-   'March',
-   'April',
-   'May',
-   'June',
-   'July',
-   'August',
-   'September',
-   'October',
-   'November',
-   'December',
 ];

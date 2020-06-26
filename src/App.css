@@ -1,9 +1,9 @@
 body {
    margin: 0;
    padding: 0;
-   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-      "Helvetica Neue", sans-serif;
+   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+      'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+      'Helvetica Neue', sans-serif;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
 }
@@ -21,47 +21,6 @@ a {
    transition: 0.3s all;
    text-decoration: none;
 }
-
-.blur-enter {
-   opacity: 0;
-}
-.blur-enter-active {
-   opacity: 1;
-   transition: opacity 250 ease-in;
-}
-.blur-exit {
-   opacity: 1;
-}
-.blur-exit-active {
-   opacity: 0;
-   transition: opacity 250 ease-in;
-}
-
-.blur-grid-enter {
-   opacity: 0;
-}
-.blur-grid-enter-active {
-   opacity: 1;
-   transition: opacity 1000 ease-in;
-}
-.blur-grid-exit {
-   opacity: 1;
-}
-.blur-grid-exit-active {
-   opacity: 0;
-   transition: opacity 1000 ease-in;
-}
-
-.cover {
-   height: 100vh;
-   width: 100vw;
-   z-index: 49999;
-   background: #d6d6d6;
-   /* opacity: 0.75; */
-   position: absolute;
-   transition: 0.5s all;
-}
-
 ::-webkit-scrollbar {
    width: 0px; /* Remove scrollbar space */
    background: transparent; /* Optional: just make scrollbar invisible */
@@ -85,29 +44,6 @@ p {
    margin: 0px;
 }
 
-.tooltip {
-   background: #f9faf9;
-   border-bottom-left-radius: 2px;
-   border-bottom-right-radius: 2px;
-   padding: 10px;
-   position: absolute;
-   z-index: 10000;
-   font-size: 14px;
-}
-
-.inner-tooltip {
-}
-
-.tooltip .key {
-   color: #737373;
-   display: inline-block;
-   width: 90px;
-}
-
-.tooltip .value {
-   color: black;
-   display: inline-block;
-}
 
 p .info {
    margin-bottom: 0px !important;

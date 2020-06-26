@@ -1,30 +1,10 @@
-//React
+
 import React, { useEffect } from 'react';
-
-//DeckGL
-
-import { FlyToInterpolator } from 'react-map-gl';
-
-//CSS
 import './App.css';
-
-//Components
 import BottomBar from './components/BottomBar';
 import Sidebar from './components/Sidebar';
 import Map from './components/Map';
-//Other
-
-import { easeCubic } from 'd3-ease';
-
-//Layers
-
 import { connect } from 'react-redux';
-
-/**
- * TODO: USE REDUCER from REACT
- */
-
-const transitionInterpolator = new FlyToInterpolator();
 
 const App = ({ activeLayer }) => {
    useEffect(() => {
@@ -42,5 +22,4 @@ const App = ({ activeLayer }) => {
 };
 
 const mapStateToProps = (state) => state;
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);
