@@ -3,11 +3,8 @@ import { viewStates, providers } from '../config';
 import { features as data } from '../assets/data.json';
 
 const initialState = {
-   in: true,
-   loaded: false,
    viewStates,
    data,
-   curr: 0,
    providers,
    activeMetric: 'trips',
    activeLayer: 'polylines',
