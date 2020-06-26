@@ -81,7 +81,8 @@ const Sidebar = ({
                      'Hexbins - aggregated pickups & dropoffs.'}
                   {activeLayer === 'arcs' &&
                      'Arcs - pickup and dropoff points.'}
-                  {activeLayer === 'animate' && 'Some nice eye candy!'}
+                  {activeLayer === 'animate' &&
+                     'Animate - some nice eye candy!'}
                </p>
             </Section>
             <Section>

@@ -18,37 +18,28 @@ import interpolate from '../util/interpolate';
 const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
    const [time, setTime] = useState(0);
    const [viewStates, setViewStates] = useState(initialViewStates);
-   const [animation, setAnimation] = useState(false);
-
    useEffect(() => {
       document.getElementById('deckgl-overlay').oncontextmenu = (evt) =>
          evt.preventDefault();
    }, []);
-   // console.log(activeLayer === 'animate');
-
    const interval = useRef(null);
 
    const step = () => {
       console.log(activeLayer);
       setTime((t) => t + 1);
-      setViewStates((temp) => {
-         const copy = [...temp];
-         copy[0] = {
-            ...copy[0],
-            bearing: copy[0].bearing + 0.04,
-         };
-         return copy;
-      });
+      setViewStates((copy) =>
+         [...copy].map((x) => ({
+            ...x,
+            bearing: x.bearing + 0.04,
+         }))
+      );
       requestAnimationFrame(step);
    };
 
    useEffect(() => {
       if (activeLayer === 'animate') {
-         // setAnimation(true);
-
          interval.current = requestAnimationFrame(step);
       } else {
-         console.log('cancel...');
          cancelAnimationFrame(interval.current);
          interval.current = null;
       }
