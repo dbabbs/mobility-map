@@ -1,6 +1,8 @@
 import { createStore } from 'redux';
 import { viewStates, providers } from '../config';
 
+import { cloneDeep } from 'lodash';
+
 import { features as data } from '../assets/data.json';
 
 const initialState = {
@@ -11,8 +13,8 @@ const initialState = {
    curr: 0,
    providers,
    activeMetric: 'trips',
-   activeLayer: 'polylines',
-   activeView: 'double',
+   activeLayer: 'animate',
+   activeView: 'single',
    initialMin: Math.min(...data.map((x) => new Date(x.properties.startDate))),
    initialMax: Math.max(...data.map((x) => new Date(x.properties.startDate))),
    minDate: Math.min(...data.map((x) => new Date(x.properties.startDate))),
@@ -43,18 +45,6 @@ const reducer = (state = initialState, action) => {
    } else if (action.type === 'SET_DATE_FILTER') {
       copy.minDate = new Date(payload[0]);
       copy.maxDate = new Date(payload[1]);
-   } else if (action.type === 'SET_VIEW_STATE') {
-      const viewId = Number(payload.viewId);
-      const modified = payload.viewState;
-      // console.log(viewId, modified);
-      console.log(copy.viewStates);
-      const viewStates = [...copy.viewStates];
-      // console.log(copy.viewState);
-      viewStates[viewId] = {
-         ...modified,
-      };
-
-      copy.viewStates = viewStates;
    }
    return copy;
 };

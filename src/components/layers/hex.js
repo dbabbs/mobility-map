@@ -1,4 +1,5 @@
 import { HexagonLayer } from '@deck.gl/aggregation-layers';
+import hextToRgba from '../../util/hexToRgba';
 function aggregate(data) {
    return [
       ...data.map((x) => x.properties.startCoordinates.map((x) => Number(x))),
@@ -10,17 +11,13 @@ const hex = ({ data }) => {
       id: 'hexagon-layer',
       data: aggregate(data),
       pickable: true,
-      radius: 800,
+      radius: 80,
+      extruded: true,
       elevationScale: 4,
       getPosition: (d) => d,
-      colorRange: [
-         [32, 62, 154],
-         [85, 29, 173],
-         [192, 25, 188],
-         [211, 19, 86],
-         [230, 71, 10],
-         [249, 226, 0],
-      ],
+      colorRange: ['#f1eef6', '#bdc9e1', '#74a9cf', '#0570b0'].map((x) =>
+         hextToRgba(x)
+      ),
    });
 };
 

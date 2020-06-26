@@ -16,27 +16,18 @@ function addDays(date, days) {
 const Histogram = ({ data, min, max }) => {
    // document.getElementById('chart').innerHTML = '';
 
-   const margin = {
-      top: 10,
-      right: 0,
-      bottom: 5,
-      left: 0,
-   };
-
    const [width, setWidth] = useState(null);
    const container = useRef(null);
    useEffect(() => {
-      // width.current = container.current.offsetWidth;
-
-      setWidth((width) => container.current.offsetWidth);
-
-      window.addEventListener('resize', () => {
-         console.log(container.current.offsetWidth);
-         setWidth((width) => container.current.offsetWidth);
-      });
+      setWidth(() => container.current.offsetWidth);
+      window.onresize = () => {
+         setTimeout(() => {
+            setWidth(() => container.current.offsetWidth);
+         }, 300);
+      };
    }, []);
 
-   const height = 50 - margin.top - margin.bottom;
+   const height = 50;
 
    const x = d3
       .scaleTime()
@@ -57,11 +48,12 @@ const Histogram = ({ data, min, max }) => {
       .domain([0, d3.max(bins, (d) => d.length)]);
 
    return (
-      <div id="chart" ref={container}>
+      <div class="histogram" ref={container}>
          <svg width={width} height={height}>
-            <g transform={`translate(${margin.left},${margin.top})`}>
+            <g>
                {bins.map((d, i) => (
                   <rect
+                     key={i}
                      class="bar"
                      x={1}
                      transform={`translate(${x(d.x0)},${y(d.length)})`}
@@ -92,7 +84,7 @@ const BottomBar = ({
             <div>{new Date(max).toLocaleString().split(',')[0]}</div>
          </div>
 
-         <Histogram data={data} min={min} max={max} />
+         <Histogram data={data} min={initialMin} max={initialMax} />
          <div style={{ marginLeft: '5px' }}>
             <Range
                onChange={(evt) =>
@@ -127,6 +119,6 @@ const BottomBar = ({
    );
 };
 
-const mapStateToProps = (state) => filterState(state);
+const mapStateToProps = (state) => state;
 const mapDispatchToProps = (dispatch) => ({ dispatch });
 export default connect(mapStateToProps, mapDispatchToProps)(BottomBar);

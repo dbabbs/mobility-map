@@ -26,19 +26,19 @@ export const MAPBOX_TOKEN =
 
 export const viewStates = [
    {
-      longitude: -122.35021467990396,
-      latitude: 47.623954436942995,
-      zoom: 14, //8
-      pitch: 60,
-      bearing: -20,
+      bearing: 12.142857142857139,
+      latitude: 47.60606068653785,
+      longitude: -122.32597899136749,
+      pitch: 44.76005900975915,
+      zoom: 12.204516441329957,
       name: 'Seattle, WA',
    },
    {
-      longitude: 13.404954,
-      latitude: 52.520008,
-      zoom: 14,
+      bearing: -35.61576354679803,
+      latitude: 52.53629905115959,
+      longitude: 13.379950042016336,
       pitch: 60,
-      bearing: -60,
+      zoom: 11.144143395954737,
       name: 'Berlin, Germany',
    },
    {

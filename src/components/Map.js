@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 
 import { MapView } from '@deck.gl/core';
 import GridLabels from './GridLabels';
-import { viewStates, MAPBOX_TOKEN } from '../config';
+import { viewStates as initialViewStates, MAPBOX_TOKEN } from '../config';
 import DeckGL from '@deck.gl/react';
 import { StaticMap, FlyToInterpolator } from 'react-map-gl';
 import getGridView from '../views';
@@ -10,19 +10,62 @@ import getGridView from '../views';
 import hexLayer from './layers/hex';
 import arcLayer from './layers/arcs';
 import pathLayer from './layers/paths';
+import tripLayer from './layers/trips';
 import filterState from '../util/filter';
 import { connect } from 'react-redux';
+import interpolate from '../util/interpolate';
+
+/*
+ else if (action.type === 'SET_VIEW_STATE') {
+      const viewId = Number(payload.viewId);
+      copy.viewStates[viewId] = payload.viewState;
+   }
+*/
 
 const Map = ({ activeView, activeLayer, data, zoom, providers, dispatch }) => {
+   const [time, setTime] = useState(0);
+   const [viewStates, setViewStates] = useState(initialViewStates);
+
    useEffect(() => {
       document.getElementById('deckgl-overlay').oncontextmenu = (evt) =>
          evt.preventDefault();
+
+      let i = 0;
+      const step = () => {
+         // if (i % 1 === 0) {
+         // }
+         setTime(i);
+         setViewStates((temp) => {
+            const copy = [...temp];
+            copy[0] = {
+               ...copy[0],
+               bearing: copy[0].bearing + 0.04,
+            };
+            return copy;
+         });
+         // if (i > 5000) {
+         //    i = 0;
+         // }
+         i++;
+
+         requestAnimationFrame(step);
+      };
+
+      const interval = requestAnimationFrame(step);
+
+      // return cancelAnimationFrame(interval);
    }, []);
+
+   const tripsData = useMemo(() => interpolate(data), [
+      ...providers.map((x) => x.active),
+   ]);
 
    const views = getGridView(activeView);
 
    const layers = [
-      activeLayer === 'polylines'
+      activeLayer === 'animate'
+         ? tripLayer({ data: tripsData, providers, time })
+         : activeLayer === 'polylines'
          ? pathLayer({
               data,
               providers,
@@ -40,9 +83,14 @@ const Map = ({ activeView, activeLayer, data, zoom, providers, dispatch }) => {
          {activeView === 'grid' && <GridLabels labels={viewStates} />}
          <DeckGL
             layers={layers}
-            onViewStateChange={(payload) =>
-               dispatch({ type: 'SET_VIEW_STATE', payload })
-            }
+            onViewStateChange={({ viewId, viewState }) => {
+               setViewStates((temp) => {
+                  const copy = [...temp];
+                  copy[Number(viewId)] = viewState;
+                  return copy;
+               });
+            }}
+            onClick={(evt) => console.log(viewStates[0])}
          >
             {views.map((view, i) => {
                return (

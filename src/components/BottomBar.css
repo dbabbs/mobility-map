@@ -3,23 +3,24 @@
    width: calc(100vw - 275px - 45px);
    left: calc(275px + 30px);
    bottom: 30px;
-   background: #F9FAF9;
+   background: #f9faf9;
    z-index: 50000;
    padding: 15px 15px 15px 15px;
    box-sizing: border-box;
    display: flex;
    flex-direction: column;
-   transition: .3s all;
+   transition: 0.3s all;
 }
 
 rect.bar {
-   fill: #D6D6D6;
+   fill: #d6d6d6;
 }
 
 .date-row {
    margin-top: 0px;
    display: flex;
    justify-content: space-between;
-   color: #7D7D7D;
+   color: #7d7d7d;
    font-size: 14px;
+   margin-bottom: 10px;
 }

@@ -65,7 +65,7 @@ const Sidebar = ({
                <h2>Toggle Layer Type</h2>
                <Selector
                   type="layer"
-                  options={['polylines', 'hexbins', 'arcs']}
+                  options={['polylines', 'hexbins', 'arcs', 'animate']}
                   active={activeLayer}
                   changeActive={(key, value) =>
                      dispatch({
@@ -81,6 +81,7 @@ const Sidebar = ({
                      'Hexbins - aggregated pickups & dropoffs.'}
                   {activeLayer === 'arcs' &&
                      'Arcs - pickup and dropoff points.'}
+                  {activeLayer === 'animate' && 'Some nice eye candy!'}
                </p>
             </Section>
             <Section>
