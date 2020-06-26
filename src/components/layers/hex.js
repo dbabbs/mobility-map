@@ -11,7 +11,7 @@ const hex = ({ data }) => {
       id: 'hexagon-layer',
       data: aggregate(data),
       pickable: true,
-      radius: 80,
+      radius: 50,
       extruded: true,
       elevationScale: 4,
       getPosition: (d) => d,
