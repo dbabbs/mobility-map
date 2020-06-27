@@ -12,10 +12,10 @@ export const viewStates = [
    },
    {
       bearing: -35.61576354679803,
-      latitude: 52.53629905115959,
-      longitude: 13.379950042016336,
+      latitude: 52.502718016262506,
+      longitude: 13.414221473954736,
       pitch: 60,
-      zoom: 11.144143395954737,
+      zoom: 12.294995518326635,
       name: 'Berlin, Germany',
    },
    {

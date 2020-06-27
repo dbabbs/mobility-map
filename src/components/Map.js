@@ -81,7 +81,7 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
                   return copy;
                });
             }}
-            onClick={(evt) => console.log(viewStates[0])}
+            onClick={(evt) => console.log(viewStates[1])}
          >
             {views.map((view, i) => {
                return (
