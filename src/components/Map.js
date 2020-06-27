@@ -25,7 +25,6 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
    const interval = useRef(null);
 
    const step = () => {
-      console.log(activeLayer);
       setTime((t) => t + 1);
       setViewStates((copy) =>
          [...copy].map((x) => ({
