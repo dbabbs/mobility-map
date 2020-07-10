@@ -1,4 +1,5 @@
-function filter(data, { providers, minDate, maxDate }) {
+function filterData(data, opts) {
+   const { providers, minDate, maxDate } = opts;
    const output = [];
    for (let i = 0; i < providers.length; i++) {
       if (providers[i].active) {
@@ -12,12 +13,4 @@ function filter(data, { providers, minDate, maxDate }) {
       .filter((x) => new Date(x.properties.startDate) <= maxDate);
 }
 
-function filterState(state) {
-   const { providers, minDate, maxDate, data } = state;
-   return {
-      ...state,
-      data: filter(data, { providers, minDate, maxDate }),
-   };
-}
-
-export default filterState;
+export default filterData;

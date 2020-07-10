@@ -2,8 +2,8 @@ import React from 'react';
 import './Sidebar.css';
 import Selector from './Selector';
 import ProviderList from './ProviderList';
-import { connect } from 'react-redux';
-import filterState from '../util/filter';
+import { useSelector, useDispatch } from 'react-redux';
+import filter from '../util/filter';
 
 const Section = ({ children }) => {
    return (
@@ -18,14 +18,16 @@ const Section = ({ children }) => {
    );
 };
 
-const Sidebar = ({
-   data,
-   dispatch,
-   activeMetric,
-   providers,
-   activeLayer,
-   activeView,
-}) => {
+const Sidebar = () => {
+   const dispatch = useDispatch();
+   const activeView = useSelector(({activeView})=>activeView);
+   const activeMetric = useSelector(({activeMetric})=>activeMetric);
+   const activeLayer = useSelector(({activeLayer})=>activeLayer);
+   const providers = useSelector(({providers})=>providers);
+   const minDate = useSelector(({minDate})=>minDate);
+   const maxDate = useSelector(({maxDate})=>maxDate);
+   const allData = useSelector(({data})=>data);
+   const data = filter(allData, { providers, minDate, maxDate })
    return (
       <div className="sidebar">
          <h1>Dylan's Mobility Service Map</h1>
@@ -104,6 +106,4 @@ const Sidebar = ({
    );
 };
 
-const mapStateToProps = (state) => filterState(state);
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+export default Sidebar;

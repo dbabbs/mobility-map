@@ -3,7 +3,8 @@ import './BottomBar.css';
 import * as d3 from 'd3';
 import { Range } from 'rc-slider';
 import './Slider.css';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import filter from '../util/filter';
 
 function addDays(date, days) {
    const result = new Date(date);
@@ -65,14 +66,14 @@ const Histogram = ({ data, min, max }) => {
    );
 };
 
-const BottomBar = ({
-   data,
-   minDate: min,
-   maxDate: max,
-   initialMin,
-   initialMax,
-   dispatch,
-}) => {
+const BottomBar = () => {
+   const dispatch = useDispatch();
+   const {initialMin,initialMax} = useSelector(({initialMin, initialMax})=>({initialMin, initialMax}));
+   const providers = useSelector(({providers})=>providers);
+   const min = useSelector(({minDate})=>minDate);
+   const max = useSelector(({maxDate})=>maxDate);
+   const allData = useSelector(({data})=>data);
+   const data = filter(allData, { providers, minDate: min, maxDate: max })
    return (
       <div className="bottom-bar">
          <div className="date-row">
@@ -116,6 +117,4 @@ const BottomBar = ({
    );
 };
 
-const mapStateToProps = (state) => state;
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-export default connect(mapStateToProps, mapDispatchToProps)(BottomBar);
+export default BottomBar;
