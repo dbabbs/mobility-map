@@ -12,6 +12,6 @@
     "@mapbox/polyline": "^1.0.0",
     "@turf/turf": "^5.1.6",
     "node-fetch": "^2.4.0",
-    "papaparse": "^4.6.3"
+    "papaparse": "^5.2.0"
   }
 }
