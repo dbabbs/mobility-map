@@ -32,7 +32,7 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
             bearing: x.bearing + 0.04,
          }))
       );
-      requestAnimationFrame(step);
+      interval.current = requestAnimationFrame(step);
    };
 
    useEffect(() => {
