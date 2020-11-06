@@ -72,7 +72,7 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
               data,
               zoom,
            })
-         : arcLayer({ data, providers }),
+         : arcLayer({ data, providers, activeRoute, setActiveRoute }),
    ];
 
    return (
