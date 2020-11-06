@@ -5,16 +5,13 @@ const fetch = require('node-fetch');
 
 const here = require('./credentials.js');
 
-let uber = Papa.parse(
-   fs.readFileSync('./trips_data.csv', 'utf8'),
-   {header: true}
-).data;
+let uber = Papa.parse(fs.readFileSync('./trips_data.csv', 'utf8'), {
+   header: true,
+}).data;
 
-let jump = Papa.parse(
-   fs.readFileSync('./jump-trips.csv', 'utf8'),
-   {header: true}
-).data
-.filter(x => x['Rental Status'] !== '');
+let jump = Papa.parse(fs.readFileSync('./jump-trips.csv', 'utf8'), {
+   header: true,
+}).data.filter((x) => x['Rental Status'] !== '');
 
 // console.log(jump)
 
@@ -23,8 +20,8 @@ const currency = {
    GBP: 1.29,
    PLN: 0.26,
    TRY: 0.17,
-   USD: 1
-}
+   USD: 1,
+};
 //
 //
 // /*
@@ -34,66 +31,67 @@ const currency = {
 // */
 
 async function geocode(query) {
-   const url = `https://geocoder.api.here.com/6.2/geocode.json?app_id=${here.id}&app_code=${here.code}&searchtext=${query}`
-   const data = await (await fetch(url) ).json();
-   if (data.hasOwnProperty('Response') && data.Response.View.length > 0 ) {
-      return await data.Response.View[0].Result[0].Location.NavigationPosition[0];
+   const url = `https://geocoder.ls.hereapi.com/6.2/geocode.json?apikey=${here.key}&searchtext=${query}`;
+   const data = await (await fetch(url)).json();
+   if (data.hasOwnProperty('Response') && data.Response.View.length > 0) {
+      return await data.Response.View[0].Result[0].Location
+         .NavigationPosition[0];
    } else {
       return 'error';
    }
 }
 
-async function route(start, end, mode = 'car',) {
-   const url = `https://route.api.here.com/routing/7.2/calculateroute.json?app_id=${here.id}&app_code=${here.code}&waypoint0=geo!${start.Latitude},${start.Longitude}&waypoint1=geo!${end.Latitude},${end.Longitude}&mode=fastest;${mode};traffic:disabled&routeattributes=shape`
+async function route(start, end, mode = 'car') {
+   const url = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apikey=${here.key}&waypoint0=geo!${start.Latitude},${start.Longitude}&waypoint1=geo!${end.Latitude},${end.Longitude}&mode=fastest;${mode};traffic:disabled&routeattributes=shape`;
    // console.log(url);
-   const data = await ( await fetch(url) ).json().catch(e => console.log(url));
+   const data = await (await fetch(url)).json().catch((e) => console.log(url));
+   console.log(data);
    if (data.hasOwnProperty('response')) {
       if (data.response.hasOwnProperty('route')) {
          const distance = await data.response.route[0].summary.distance;
-         const polyline = await data.response.route[0].shape.map(
-            x => [
-               Number(x.split(",")[1]),
-               Number(x.split(",")[0])
-            ]
-         );
+         const polyline = await data.response.route[0].shape.map((x) => [
+            Number(x.split(',')[1]),
+            Number(x.split(',')[0]),
+         ]);
          return {
             routeError: false,
             distance: distance,
-            polyline: polyline
-         }
+            polyline: polyline,
+         };
       } else {
          return {
             routeError: true,
             distance: '',
-            polyline: []
-         }
+            polyline: [],
+         };
       }
    } else {
       return {
          routeError: true,
          distance: '',
-         polyline: []
-      }
+         polyline: [],
+      };
    }
-
-
 }
 
 async function start() {
+   uber = uber
+      .filter((row) => row['Product Type'] !== 'UberEATS Marketplace')
+      .filter((row) => row['Trip or Order Status'] === 'COMPLETED');
 
-   uber = uber.filter(row => row['Product Type'] !== 'UberEATS Marketplace')
-   .filter(row => row['Trip or Order Status'] === 'COMPLETED')
-
-   const uberPromises = uber.map(async row => {
+   const uberPromises = uber.map(async (row) => {
       const startCoordinates = {
          Latitude: Number(row['Begin Trip Lat']),
-         Longitude: Number(row['Begin Trip Lng'])
-      }
+         Longitude: Number(row['Begin Trip Lng']),
+      };
       const endCoordinates = {
          Latitude: Number(row['Dropoff Lat']),
-         Longitude: Number(row['Dropoff Lng'])
-      }
-      const { polyline, routeError } = await route(startCoordinates, endCoordinates);
+         Longitude: Number(row['Dropoff Lng']),
+      };
+      const { polyline, routeError } = await route(
+         startCoordinates,
+         endCoordinates
+      );
       // routeError && console.log(routeError)
 
       const mod = {
@@ -102,29 +100,40 @@ async function start() {
             type: 'LineString',
             coordinates: routeError ? 'error' : polyline,
          },
-         properties: {}
+         properties: {},
       };
-      mod.properties.cost = currency[row['Fare Currency']] * Number(row['Fare Amount']);
+      mod.properties.cost =
+         currency[row['Fare Currency']] * Number(row['Fare Amount']);
       mod.properties.provider = 'uber';
       mod.properties.startDate = new Date(row['Begin Trip Time']);
       mod.properties.distance = Number(row['Distance (miles)']);
-      mod.properties.startCoordinates = [Number(row['Begin Trip Lng']), Number(row['Begin Trip Lat'])];
-      mod.properties.endCoordinates = [Number(row['Dropoff Lng']), Number(row['Dropoff Lat'])];
+      mod.properties.startCoordinates = [
+         Number(row['Begin Trip Lng']),
+         Number(row['Begin Trip Lat']),
+      ];
+      mod.properties.endCoordinates = [
+         Number(row['Dropoff Lng']),
+         Number(row['Dropoff Lat']),
+      ];
       return mod;
-   })
-   uber = await Promise.all(uberPromises)
+   });
+   uber = await Promise.all(uberPromises);
 
-
-
-   const jumpPromises = jump.map(async row => {
-      console.log(row)
+   const jumpPromises = jump.map(async (row) => {
+      // console.log(row);
       // console.log(row['Begin Rental Address'])
-      const startGeocode = {Latitude: row['Begin Rental Lat'], Longitude: row['Begin Rental Lng'] };//await geocode(row['Begin Rental Address']);
-      console.log(startGeocode);
-      const endGeocode = {Latitude: row['Finish Rental Lat'], Longitude: row['Finish Rental Lng'] };
-      console.log(endGeocode)
+      const startGeocode = {
+         Latitude: row['Begin Rental Lat'],
+         Longitude: row['Begin Rental Lng'],
+      }; //await geocode(row['Begin Rental Address']);
+      // console.log(startGeocode);
+      const endGeocode = {
+         Latitude: row['Finish Rental Lat'],
+         Longitude: row['Finish Rental Lng'],
+      };
+      // console.log(endGeocode);
       const { polyline, routeError } = await route(startGeocode, endGeocode);
-      routeError && console.log('jump error ' +routeError)
+      routeError && console.log('jump error ' + routeError);
 
       const mod = {
          type: 'Feature',
@@ -132,38 +141,47 @@ async function start() {
             type: 'LineString',
             coordinates: routeError ? 'error' : polyline,
          },
-         properties: {}
+         properties: {},
       };
       mod.properties.cost = Number(row['Fare Amount'].toString().substring(1));
-      console.log(mod.properties.cost)
+      // console.log(mod.properties.cost);
       mod.properties.provider = 'jump';
       mod.properties.startDate = new Date(row['Begin Rental Time']);
       mod.properties.distance = Number(row['Distance (miles)']);
-      mod.properties.startCoordinates = [startGeocode.Longitude, startGeocode.Latitude];
-      mod.properties.endCoordinates = [endGeocode.Longitude, endGeocode.Latitude];
+      mod.properties.startCoordinates = [
+         startGeocode.Longitude,
+         startGeocode.Latitude,
+      ];
+      mod.properties.endCoordinates = [
+         endGeocode.Longitude,
+         endGeocode.Latitude,
+      ];
       return mod;
-   })
-   jump = await Promise.all(jumpPromises)
-
-   
-
-
-   const old = require('../src/data.json').features.filter(x => x.properties.provider !== 'uber' && x.properties.provider !== 'jump');
-
-   console.log(old.length);
-
-   const output = [...uber, ...jump, ...old]
-      .filter(x => x.geometry.coordinates !== 'error');
-   console.log(output.length)
-
-   fs.writeFile('../src/updated.json', JSON.stringify({
-      type: 'FeatureCollection',
-      features: output
-   }), function(err) {
-
-       console.log("File was saved!");
    });
-}
+   jump = await Promise.all(jumpPromises);
 
+   const old = require('../src/assets/data.json').features.filter(
+      (x) =>
+         x.properties.provider !== 'uber' && x.properties.provider !== 'jump'
+   );
+
+   // console.log(uber);
+
+   const output = [...uber, ...jump, ...old].filter(
+      (x) => x.geometry.coordinates !== 'error'
+   );
+   // console.log(output);
+
+   fs.writeFile(
+      '../src/updated.json',
+      JSON.stringify({
+         type: 'FeatureCollection',
+         features: output,
+      }),
+      function (err) {
+         console.log('File was saved!');
+      }
+   );
+}
 
 start();

@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, {
+   useEffect,
+   useState,
+   useMemo,
+   useRef,
+   useCallback,
+} from 'react';
 
 import { MapView } from '@deck.gl/core';
 import GridLabels from './GridLabels';
@@ -18,13 +24,14 @@ import interpolate from '../util/interpolate';
 const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
    const [time, setTime] = useState(0);
    const [viewStates, setViewStates] = useState(initialViewStates);
+   const [activeRoute, setActiveRoute] = useState(-1);
    useEffect(() => {
       document.getElementById('deckgl-overlay').oncontextmenu = (evt) =>
          evt.preventDefault();
    }, []);
    const interval = useRef(null);
 
-   const step = () => {
+   const step = useCallback(() => {
       setTime((t) => t + 1);
       setViewStates((copy) =>
          [...copy].map((x) => ({
@@ -33,7 +40,7 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
          }))
       );
       interval.current = requestAnimationFrame(step);
-   };
+   });
 
    useEffect(() => {
       if (activeLayer === 'animate') {
@@ -44,11 +51,9 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
       }
 
       return () => cancelAnimationFrame(interval.current);
-   }, [activeLayer === 'animate']);
+   }, [activeLayer, step]);
 
-   const tripsData = useMemo(() => interpolate(data), [
-      ...providers.map((x) => x.active),
-   ]);
+   const tripsData = useMemo(() => interpolate(data), [data]);
 
    const views = getGridView(activeView);
 
@@ -59,6 +64,8 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
          ? pathLayer({
               data,
               providers,
+              activeRoute,
+              setActiveRoute,
            })
          : activeLayer === 'hexbins'
          ? hexLayer({
@@ -81,6 +88,7 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
                });
             }}
             onClick={(evt) => console.log(viewStates[1])}
+            pickingRadius={5}
          >
             {views.map((view, i) => {
                return (
