@@ -17,11 +17,19 @@ import hexLayer from './layers/hex';
 import arcLayer from './layers/arcs';
 import pathLayer from './layers/paths';
 import tripLayer from './layers/trips';
-import filterState from '../util/filter';
-import { connect } from 'react-redux';
+import filter from '../util/filter';
+import { useSelector } from 'react-redux';
 import interpolate from '../util/interpolate';
 
-const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
+const Map = () => {
+   const activeView = useSelector(({activeView})=>activeView);
+   const activeLayer = useSelector(({activeLayer})=>activeLayer);
+   const zoom = useSelector(({zoom})=>zoom);
+   const providers = useSelector(({providers})=>providers);
+   const minDate = useSelector(({minDate})=>minDate);
+   const maxDate = useSelector(({maxDate})=>maxDate);
+   const allData = useSelector(({data})=>data);
+   const data = filter(allData, { providers, minDate, maxDate })
    const [time, setTime] = useState(0);
    const [viewStates, setViewStates] = useState(initialViewStates);
    const [activeRoute, setActiveRoute] = useState(-1);
@@ -108,6 +116,4 @@ const Map = ({ activeView, activeLayer, data, zoom, providers }) => {
    );
 };
 
-const mapStateToProps = (state) => filterState(state);
-const mapDispatchToProps = (dispatch) => ({ dispatch });
-export default connect(mapStateToProps, mapDispatchToProps)(Map);
+export default Map;
